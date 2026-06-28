@@ -1,4 +1,38 @@
 {
-  // Cloudflare Workers configuration
-  // For Pages projects, use wrangler.toml instead
+  // Cloudflare Pages 設定（SvelteKit + adapter-cloudflare）
+  // khubs.net 高創坊商會系統
+  "name": "khubs",
+  "compatibility_date": "2026-06-01",
+
+  // nodejs_compat：Better Auth 與 SvelteKit worker 的 Node API 相容（必須）
+  // nodejs_als：AsyncLocalStorage（getRequestEvent 需要）
+  "compatibility_flags": ["nodejs_compat", "nodejs_als"],
+
+  // adapter-cloudflare 產出目錄（Pages）
+  "pages_build_output_dir": ".svelte-kit/cloudflare",
+
+  // ── 綁定 ──────────────────────────────────────────────
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "chamber-db",
+      "database_id": "c9b301c3-332f-4b28-b869-c87009fbe1f6",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "BUCKET",
+      "bucket_name": "chamber-assets"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "94084b0b7f0b470488b5c5ab129cf6fd"
+    }
+  ]
+
+  // 機密（BETTER_AUTH_SECRET / GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET）
+  // 本機放 .dev.vars；正式環境用 Pages 專案設定或 wrangler pages secret put
 }

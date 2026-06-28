@@ -1,141 +1,49 @@
 <script lang="ts">
 	let { data } = $props();
 
-	function formatDate(date: Date): string {
-		return new Date(date).toLocaleDateString('zh-TW', {
-			year: 'numeric',
-			month: '2-digit',
-			day: '2-digit'
-		});
+	function fmtDate(ts: number) {
+		return new Date(ts * 1000).toLocaleDateString('zh-TW');
+	}
+	function excerpt(body: string | null) {
+		if (!body) return '';
+		return body.length > 80 ? body.slice(0, 80) + '…' : body;
 	}
 </script>
 
 <svelte:head>
-	<title>最新消息｜高創坊</title>
+	<title>最新消息｜商會系統</title>
+	<meta name="description" content="勞工大學創新創業專班商會的課程公告、學員故事與產業觀察。" />
 </svelte:head>
 
-<div class="container">
-	<h1>📰 最新消息</h1>
-
-	{#if data.posts.length > 0}
-		<div class="news-list">
-			{#each data.posts as post (post.id)}
-				<article class="news-item">
-					<div class="news-header">
-						<div>
-							<h2>{post.title}</h2>
-							<p class="content">{post.content.substring(0, 200)}{post.content.length > 200 ? '...' : ''}</p>
-						</div>
-						<span class="date">{formatDate(post.createdAt)}</span>
-					</div>
-					<div class="news-footer">
-						<span class="type">{post.type === 'news' ? '消息' : post.type === 'article' ? '文章' : '討論'}</span>
-						<span class="visibility">{post.visibility === 'public' ? '公開' : '會員限定'}</span>
-					</div>
-				</article>
-			{/each}
-		</div>
+<section class="news">
+	<h1>最新消息</h1>
+	{#if data.posts.length === 0}
+		<p class="empty">目前還沒有公開的消息。</p>
 	{:else}
-		<div class="empty">
-			<p>暫時沒有最新消息</p>
-		</div>
+		<ul class="list">
+			{#each data.posts as p (p.slug)}
+				<li>
+					<a href="/news/{p.slug}">
+						<span class="type">{p.type === 'news' ? '消息' : '文章'}</span>
+						<h2>{p.title}</h2>
+						<p class="excerpt">{excerpt(p.body)}</p>
+						<time>{fmtDate(p.createdAt)}</time>
+					</a>
+				</li>
+			{/each}
+		</ul>
 	{/if}
-</div>
+</section>
 
 <style>
-	.container {
-		max-width: 800px;
-		margin: 0 auto;
-		padding: 2rem;
-	}
-
-	h1 {
-		margin-bottom: 2rem;
-	}
-
-	.news-list {
-		display: flex;
-		flex-direction: column;
-		gap: 1.5rem;
-	}
-
-	.news-item {
-		background: white;
-		padding: 2rem;
-		border-radius: 8px;
-		border: 1px solid #e5e5e5;
-		transition: all 0.2s ease;
-	}
-
-	.news-item:hover {
-		border-color: #007bff;
-		box-shadow: 0 4px 12px rgba(0, 123, 255, 0.1);
-	}
-
-	.news-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-		gap: 1.5rem;
-		margin-bottom: 1rem;
-	}
-
-	.news-header > div {
-		flex: 1;
-	}
-
-	.news-item h2 {
-		margin: 0 0 0.75rem 0;
-		color: #333;
-		font-size: 1.3rem;
-	}
-
-	.date {
-		background: #f0f0f0;
-		color: #666;
-		padding: 0.35rem 0.75rem;
-		border-radius: 4px;
-		font-size: 0.8rem;
-		white-space: nowrap;
-	}
-
-	.content {
-		color: #666;
-		line-height: 1.6;
-		margin: 0;
-		font-size: 0.95rem;
-	}
-
-	.news-footer {
-		display: flex;
-		gap: 0.75rem;
-		margin-top: 1rem;
-		padding-top: 1rem;
-		border-top: 1px solid #e5e5e5;
-	}
-
-	.type,
-	.visibility {
-		display: inline-block;
-		padding: 0.25rem 0.75rem;
-		border-radius: 12px;
-		font-size: 0.75rem;
-		font-weight: 500;
-	}
-
-	.type {
-		background: #e7f3ff;
-		color: #0056b3;
-	}
-
-	.visibility {
-		background: #f0f0f0;
-		color: #666;
-	}
-
-	.empty {
-		text-align: center;
-		padding: 4rem 2rem;
-		color: #999;
-	}
+	.news { padding: var(--space-12) 0; max-width: 720px; }
+	h1 { margin-bottom: var(--space-8); }
+	.empty { color: var(--color-ink-soft); }
+	.list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: var(--space-4); }
+	.list a { display: block; padding: var(--space-5); border: 1px solid var(--color-border); border-radius: var(--radius-md); text-decoration: none; color: inherit; transition: border-color 0.15s; }
+	.list a:hover { border-color: var(--color-amber); }
+	.type { font-family: var(--font-mono); font-size: var(--text-caption); color: var(--color-teal); }
+	.list h2 { font-size: var(--text-h3); margin: var(--space-2) 0; }
+	.excerpt { color: var(--color-ink-soft); font-size: var(--text-small); }
+	time { font-size: var(--text-caption); color: var(--color-ink-soft); }
 </style>

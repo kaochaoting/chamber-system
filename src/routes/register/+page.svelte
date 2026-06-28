@@ -4,27 +4,32 @@
 	let { form } = $props();
 </script>
 
-<svelte:head><title>登入｜商會系統</title></svelte:head>
+<svelte:head><title>申請加入｜商會系統</title></svelte:head>
 
 <section class="auth">
-	<h1>登入</h1>
+	<h1>申請加入</h1>
+	<p class="hint">有邀請碼可直接啟用；沒有也可申請，由單位審核後開通。</p>
+
 	{#if form?.message}<p class="error" role="alert">{form.message}</p>{/if}
 
 	<form method="POST" use:enhance>
+		<label>姓名<input name="name" value={form?.name ?? ''} required /></label>
 		<label>信箱<input type="email" name="email" value={form?.email ?? ''} required /></label>
-		<label>密碼<input type="password" name="password" required /></label>
-		<Button type="submit">登入</Button>
+		<label>密碼（至少 8 碼）<input type="password" name="password" minlength="8" required /></label>
+		<label>邀請碼（選填）<input name="invite" placeholder="有碼直接啟用" /></label>
+		<Button type="submit">送出申請</Button>
 	</form>
 
-	<form method="POST" action="?/google" use:enhance class="social">
-		<Button type="submit" variant="secondary">用 Google 登入</Button>
+	<form method="POST" action="/login?/google" use:enhance class="social">
+		<Button type="submit" variant="secondary">用 Google 申請／登入</Button>
 	</form>
 
-	<p class="alt">還不是會員？<a href="/register">申請加入</a></p>
+	<p class="alt">已經是會員？<a href="/login">登入</a></p>
 </section>
 
 <style>
 	.auth { max-width: 420px; margin: var(--space-16) auto; padding: 0 var(--space-4); }
+	.hint { color: var(--color-ink-soft); font-size: var(--text-small); }
 	form { display: flex; flex-direction: column; gap: var(--space-3); margin-top: var(--space-6); }
 	label { display: flex; flex-direction: column; gap: var(--space-1); font-size: var(--text-small); }
 	input {

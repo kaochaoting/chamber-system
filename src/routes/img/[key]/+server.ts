@@ -1,24 +1,18 @@
-import type { RequestHandler } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
 
-// 模擬R2存儲（與上傳API共享）
-const uploadedFiles = new Map<string, { data: ArrayBuffer; type: string }>();
+export const GET: RequestHandler = async ({ params, platform }) => {
+	const bucket = (platform!.env as any).BUCKET;
+	if (!bucket) throw error(500, '儲存空間未設定。');
 
-export const GET: RequestHandler = async ({ params }) => {
-	try {
-		const key = decodeURIComponent(params.key);
-		const file = uploadedFiles.get(key);
+	const key = decodeURIComponent(params.key);
+	const obj = await bucket.get(key);
+	if (!obj) throw error(404, '找不到圖片。');
 
-		if (!file) {
-			return new Response('Not found', { status: 404 });
-		}
+	const headers = new Headers();
+	headers.set('Content-Type', obj.httpMetadata?.contentType ?? 'application/octet-stream');
+	headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+	headers.set('etag', obj.httpEtag);
 
-		return new Response(file.data, {
-			headers: {
-				'Content-Type': file.type,
-				'Cache-Control': 'public, max-age=31536000'
-			}
-		});
-	} catch (error) {
-		return new Response('Error', { status: 500 });
-	}
+	return new Response(obj.body, { headers });
 };

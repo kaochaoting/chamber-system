@@ -1,54 +1,42 @@
-import { text } from '@sveltejs/kit';
-import type { RequestHandler } from '@sveltejs/kit';
-import { getAllPublicProfiles } from '$lib/server/data-store';
-import { getAllPosts } from '$lib/server/data-store';
+import { and, eq, inArray } from 'drizzle-orm';
+import { getDb } from '$lib/server/db/client';
+import { profiles, posts } from '$lib/server/db/schema';
+import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async () => {
-	const baseUrl = 'https://khubs.net';
-	
-	// 靜態頁面
-	const staticPages = [
-		{ url: '/', changefreq: 'weekly', priority: '1.0' },
-		{ url: '/members', changefreq: 'daily', priority: '0.9' },
-		{ url: '/news', changefreq: 'daily', priority: '0.8' }
+export const GET: RequestHandler = async ({ platform, url }) => {
+	const base = `${url.protocol}//${url.host}`;
+	const db = getDb((platform!.env as any).DB);
+
+	const staticUrls = ['/', '/members', '/news', '/register'];
+
+	const pubProfiles = await db
+		.select({ slug: profiles.slug })
+		.from(profiles)
+		.where(eq(profiles.isPublic, true));
+
+	const pubPosts = await db
+		.select({ slug: posts.slug })
+		.from(posts)
+		.where(
+			and(
+				eq(posts.visibility, 'public'),
+				eq(posts.status, 'published'),
+				inArray(posts.type, ['news', 'article'])
+			)
+		);
+
+	const urls = [
+		...staticUrls.map((u) => `${base}${u}`),
+		...pubProfiles.map((p) => `${base}/members/${p.slug}`),
+		...pubPosts.map((p) => `${base}/news/${p.slug}`)
 	];
-
-	// 動態成員頁面
-	const profiles = getAllPublicProfiles();
-	const memberPages = profiles.map(p => ({
-		url: `/members/${p.userId}`,
-		changefreq: 'weekly',
-		priority: '0.7'
-	}));
-
-	// 動態新聞頁面
-	const posts = getAllPosts('news', 'public');
-	const newsPages = posts.map(p => ({
-		url: `/news/${p.slug}`,
-		changefreq: 'weekly',
-		priority: '0.6',
-		lastmod: p.updatedAt.toISOString().split('T')[0]
-	}));
-
-	const allPages = [...staticPages, ...memberPages, ...newsPages];
 
 	const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${allPages
-	.map(
-		page => `  <url>
-    <loc>${baseUrl}${page.url}</loc>
-    <changefreq>${page.changefreq}</changefreq>
-    <priority>${page.priority}</priority>
-    ${page.lastmod ? `<lastmod>${page.lastmod}</lastmod>` : ''}
-  </url>`
-	)
-	.join('\n')}
+${urls.map((u) => `  <url><loc>${u}</loc></url>`).join('\n')}
 </urlset>`;
 
-	return text(xml, {
-		headers: {
-			'Content-Type': 'application/xml'
-		}
+	return new Response(xml, {
+		headers: { 'Content-Type': 'application/xml; charset=utf-8' }
 	});
 };

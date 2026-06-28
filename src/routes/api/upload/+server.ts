@@ -1,50 +1,29 @@
-import { json } from '@sveltejs/kit';
-import type { RequestHandler } from '@sveltejs/kit';
+import { json, error } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
 
-// 模擬R2存儲（實際環境應連接Cloudflare R2）
-const uploadedFiles = new Map<string, { data: ArrayBuffer; type: string }>();
+const ALLOWED = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
-export const POST: RequestHandler = async ({ request, locals }) => {
-	// 需要登入
-	if (!locals.user) {
-		return json({ error: '未登入' }, { status: 401 });
-	}
+export const POST: RequestHandler = async ({ request, locals, platform }) => {
+	const user = locals.user as any;
+	if (!user) throw error(401, '請先登入。');
 
-	try {
-		const formData = await request.formData();
-		const file = formData.get('file') as File;
+	const bucket = (platform!.env as any).BUCKET;
+	if (!bucket) throw error(500, '儲存空間未設定。');
 
-		if (!file) {
-			return json({ error: '缺少文件' }, { status: 400 });
-		}
+	const formData = await request.formData();
+	const file = formData.get('file');
+	if (!(file instanceof File)) throw error(400, '缺少檔案。');
 
-		// 驗證文件類型
-		const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-		if (!allowedTypes.includes(file.type)) {
-			return json({ error: '不支持的文件類型' }, { status: 400 });
-		}
+	if (!ALLOWED.includes(file.type)) throw error(400, '僅接受 JPEG／PNG／WebP／GIF。');
+	if (file.size > MAX_SIZE) throw error(400, '檔案不可超過 5MB。');
 
-		// 驗證文件大小 (5MB)
-		if (file.size > 5 * 1024 * 1024) {
-			return json({ error: '文件過大' }, { status: 400 });
-		}
+	const ext = file.type.split('/')[1];
+	const key = `${user.id}/${Date.now()}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
 
-		// 生成key
-		const key = `${locals.user.id}/${Date.now()}-${file.name}`;
-		const buffer = await file.arrayBuffer();
+	await bucket.put(key, await file.arrayBuffer(), {
+		httpMetadata: { contentType: file.type }
+	});
 
-		// 存儲文件
-		uploadedFiles.set(key, {
-			data: buffer,
-			type: file.type
-		});
-
-		return json({
-			success: true,
-			key,
-			url: `/img/${encodeURIComponent(key)}`
-		});
-	} catch (error) {
-		return json({ error: '上傳失敗' }, { status: 500 });
-	}
+	return json({ key, url: `/img/${encodeURIComponent(key)}` });
 };

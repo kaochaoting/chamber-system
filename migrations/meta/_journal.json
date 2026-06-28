@@ -15,6 +15,13 @@
       "when": 1782641154066,
       "tag": "0001_free_pet_avengers",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1782669686088,
+      "tag": "0002_fantastic_krista_starr",
+      "breakpoints": true
     }
   ]
 }

@@ -5,14 +5,15 @@
   "description": "高創坊 - 高雄創新創業社群商會系統",
   "main": "index.js",
   "scripts": {
-    "db:migrate:local": "wrangler d1 migrations apply chamber-db --local",
-    "build": "vite build",
-    "deploy": "npm run build && wrangler deploy",
-    "preview": "wrangler dev",
     "dev": "vite dev",
-    "db:studio": "drizzle-kit studio",
+    "build": "vite build",
+    "preview": "wrangler pages dev .svelte-kit/cloudflare",
+    "deploy": "npm run build && wrangler pages deploy .svelte-kit/cloudflare --project-name=khubs",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate:local": "wrangler d1 migrations apply chamber-db --local",
     "db:migrate:remote": "wrangler d1 migrations apply chamber-db --remote",
-    "db:generate": "drizzle-kit generate"
+    "db:seed:remote": "wrangler d1 execute chamber-db --remote --file=./scripts/seed.sql",
+    "db:studio": "drizzle-kit studio"
   },
   "keywords": [],
   "author": "",
@@ -29,9 +30,8 @@
     "wrangler": "^4.105.0"
   },
   "dependencies": {
-    "bcryptjs": "^3.0.3",
-    "drizzle-orm": "^0.45.2",
-    "uuid": "^14.0.1"
+    "better-auth": "^1.2.8",
+    "drizzle-orm": "^0.45.2"
   },
   "homepage": "https://khubs.net"
 }

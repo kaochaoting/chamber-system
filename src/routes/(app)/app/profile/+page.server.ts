@@ -1,39 +1,65 @@
 import { fail } from '@sveltejs/kit';
-import { getProfile, saveProfile } from '$lib/server/data-store';
-import type { PageServerLoad, Actions } from './$types';
+import { eq } from 'drizzle-orm';
+import { getDb } from '$lib/server/db/client';
+import { profiles } from '$lib/server/db/schema';
+import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals }) => {
-	const profile = getProfile(locals.user!.id);
-	return { profile };
+function slugify(s: string) {
+	return (
+		s
+			.toLowerCase()
+			.trim()
+			.replace(/[^\p{L}\p{N}]+/gu, '-')
+			.replace(/^-+|-+$/g, '') || 'member'
+	);
+}
+
+export const load: PageServerLoad = async ({ locals, platform }) => {
+	const db = getDb((platform!.env as any).DB);
+	const rows = await db
+		.select()
+		.from(profiles)
+		.where(eq(profiles.userId, (locals.user as any).id))
+		.limit(1);
+	return { profile: rows[0] ?? null };
 };
 
 export const actions: Actions = {
-	default: async ({ locals, request }) => {
+	default: async ({ request, locals, platform }) => {
+		const userId = (locals.user as any).id as string;
+		const db = getDb((platform!.env as any).DB);
 		const form = await request.formData();
+
 		const displayName = String(form.get('displayName') ?? '').trim();
-		const bio = String(form.get('bio') ?? '').trim();
-		const website = String(form.get('website') ?? '').trim();
-		const publicEmail = String(form.get('publicEmail') ?? '').trim();
-		const privatePhone = String(form.get('privatePhone') ?? '').trim();
+		if (!displayName) return fail(400, { message: '請填寫顯示名稱。' });
+
+		const bio = String(form.get('bio') ?? '').trim() || null;
 		const isPublic = form.get('isPublic') === 'on';
+		const publicContact = { email: String(form.get('publicEmail') ?? '').trim() };
+		const privateContact = { phone: String(form.get('privatePhone') ?? '').trim() };
+		const socials = { website: String(form.get('website') ?? '').trim() };
 
-		if (!displayName) {
-			return fail(400, { message: '顯示名稱為必填' });
+		const existing = await db.select().from(profiles).where(eq(profiles.userId, userId)).limit(1);
+		const slug = existing[0]?.slug ?? `${slugify(displayName)}-${userId.slice(0, 6)}`;
+		const now = new Date();
+
+		const values = {
+			userId,
+			slug,
+			displayName,
+			bio,
+			isPublic,
+			publicContact,
+			privateContact,
+			socials,
+			updatedAt: now
+		};
+
+		if (existing[0]) {
+			await db.update(profiles).set(values).where(eq(profiles.userId, userId));
+		} else {
+			await db.insert(profiles).values(values);
 		}
-
-		try {
-			saveProfile(locals.user!.id, {
-				displayName,
-				bio,
-				website: website || undefined,
-				publicEmail: publicEmail || undefined,
-				privatePhone: privatePhone || undefined,
-				isPublic
-			});
-
-			return { success: true, message: '已儲存' };
-		} catch (err) {
-			return fail(500, { message: '儲存失敗，請稍後重試' });
-		}
+		return { success: true };
 	}
 };

@@ -1,7 +1,0 @@
-name = "khubs"
-pages_build_output_dir = ".svelte-kit/cloudflare"
-
-[env.production]
-# 高創坊 - khubs.net 生產環境配置
-account_id = ""
-project_name = "khubs"

@@ -1,234 +1,125 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	let { data, form } = $props();
 
-	let { data } = $props();
-	let loading = $state(false);
-
-	function getStatusBadge(status: string) {
-		const badges: Record<string, { text: string; class: string }> = {
-			pending: { text: '待核准', class: 'pending' },
-			active: { text: '已核准', class: 'active' },
-			suspended: { text: '已停用', class: 'suspended' }
-		};
-		return badges[status] || { text: status, class: '' };
-	}
-
-	function getRoleLabel(role: string) {
-		const labels: Record<string, string> = {
-			member: '成員',
-			mentor: '導師',
-			assistant: '助理',
-			admin: '管理員'
-		};
-		return labels[role] || role;
-	}
+	const roleLabels: Record<string, string> = {
+		member: '成員',
+		mentor: '導師',
+		assistant: '助教',
+		admin: '管理員'
+	};
+	const statusLabels: Record<string, string> = {
+		pending: '待審核',
+		active: '已啟用',
+		suspended: '已停權'
+	};
 </script>
 
-<svelte:head>
-	<title>會員管理｜高創坊</title>
-</svelte:head>
+<svelte:head><title>會員管理｜後台</title></svelte:head>
 
-<div class="container">
-	<h1>👥 會員管理</h1>
+<div class="wrap">
+	<h1>會員管理</h1>
 
-	{#if data.pendingUsers.length > 0}
-		<div class="panel">
-			<h2>待核准的帳號 ({data.pendingUsers.length})</h2>
+	{#if form?.success}
+		<div class="alert success">✓ 已更新</div>
+	{:else if form?.message}
+		<div class="alert error">✕ {form.message}</div>
+	{/if}
+
+	<section>
+		<h2>待審核 ({data.pending.length})</h2>
+		{#if data.pending.length === 0}
+			<p class="empty">目前沒有待審核的申請。</p>
+		{:else}
 			<table>
 				<thead>
-					<tr>
-						<th>名字</th>
-						<th>信箱</th>
-						<th>期別</th>
-						<th>操作</th>
-					</tr>
+					<tr><th>姓名</th><th>信箱</th><th>期別</th><th>操作</th></tr>
 				</thead>
 				<tbody>
-					{#each data.pendingUsers as user (user.email)}
+					{#each data.pending as u (u.id)}
 						<tr>
-							<td>{user.name}</td>
-							<td>{user.email}</td>
-							<td>{user.cohort || '-'}</td>
-							<td>
-								<form method="POST" action="?/approve" use:enhance={() => { loading = true; return async () => { loading = false; }; }}>
-									<input type="hidden" name="email" value={user.email} />
-									<button type="submit" class="btn-approve" {loading}>核准</button>
+							<td>{u.name}</td>
+							<td>{u.email}</td>
+							<td colspan="2">
+								<form method="POST" action="?/approve" use:enhance class="inline">
+									<input type="hidden" name="id" value={u.id} />
+									<input type="text" name="cohort" placeholder="期別 115" class="cohort" />
+									<button type="submit" class="btn approve">核准</button>
 								</form>
 							</td>
 						</tr>
 					{/each}
 				</tbody>
 			</table>
-		</div>
-	{:else}
-		<div class="panel">
-			<h2>待核准的帳號</h2>
-			<p class="empty">目前沒有待核准的帳號</p>
-		</div>
-	{/if}
+		{/if}
+	</section>
 
-	<div class="panel">
-		<h2>所有會員 ({data.allUsers.length})</h2>
-		<table>
-			<thead>
-				<tr>
-					<th>名字</th>
-					<th>信箱</th>
-					<th>狀態</th>
-					<th>角色</th>
-					<th>期別</th>
-					<th>操作</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each data.allUsers as user (user.email)}
-					{@const badge = getStatusBadge(user.status)}
-					<tr>
-						<td>{user.name}</td>
-						<td>{user.email}</td>
-						<td>
-							<span class="badge {badge.class}">{badge.text}</span>
-						</td>
-						<td>
-							<form method="POST" action="?/updateRole" use:enhance={() => { loading = true; return async () => { loading = false; }; }}>
-								<input type="hidden" name="email" value={user.email} />
-								<select name="role" value={user.role} onchange={(e) => e.currentTarget.form?.submit()}>
-									<option value="member">成員</option>
-									<option value="mentor">導師</option>
-									<option value="assistant">助理</option>
-									<option value="admin">管理員</option>
-								</select>
-							</form>
-						</td>
-						<td>{user.cohort || '-'}</td>
-						<td>
-							{#if user.status !== 'suspended'}
-								<form method="POST" action="?/suspend" use:enhance={() => { loading = true; return async () => { loading = false; }; }}>
-									<input type="hidden" name="email" value={user.email} />
-									<button type="submit" class="btn-danger">停用</button>
+	<section>
+		<h2>所有會員 ({data.members.length})</h2>
+		{#if data.members.length === 0}
+			<p class="empty">尚無已啟用的會員。</p>
+		{:else}
+			<table>
+				<thead>
+					<tr><th>姓名</th><th>信箱</th><th>角色</th><th>狀態</th><th>期別</th><th>操作</th></tr>
+				</thead>
+				<tbody>
+					{#each data.members as u (u.id)}
+						<tr>
+							<td>{u.name}</td>
+							<td>{u.email}</td>
+							<td>
+								<form method="POST" action="?/setRole" use:enhance class="inline">
+									<input type="hidden" name="id" value={u.id} />
+									<select name="role" onchange={(e) => e.currentTarget.form?.requestSubmit()}>
+										{#each Object.entries(roleLabels) as [val, label]}
+											<option value={val} selected={u.role === val}>{label}</option>
+										{/each}
+									</select>
 								</form>
-							{:else}
-								<span class="text-muted">已停用</span>
-							{/if}
-						</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
-	</div>
+							</td>
+							<td><span class="badge {u.status}">{statusLabels[u.status]}</span></td>
+							<td>{u.cohort ?? '—'}</td>
+							<td>
+								{#if u.status === 'suspended'}
+									<form method="POST" action="?/reactivate" use:enhance class="inline">
+										<input type="hidden" name="id" value={u.id} />
+										<button type="submit" class="btn">恢復</button>
+									</form>
+								{:else}
+									<form method="POST" action="?/suspend" use:enhance class="inline">
+										<input type="hidden" name="id" value={u.id} />
+										<button type="submit" class="btn danger">停權</button>
+									</form>
+								{/if}
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		{/if}
+	</section>
 </div>
 
 <style>
-	.container {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 2rem;
-	}
-
-	h1 {
-		margin-bottom: 2rem;
-	}
-
-	.panel {
-		background: white;
-		padding: 2rem;
-		border-radius: 8px;
-		border: 1px solid #ddd;
-		margin-bottom: 2rem;
-	}
-
-	.panel h2 {
-		margin-top: 0;
-		margin-bottom: 1.5rem;
-	}
-
-	.empty {
-		color: #999;
-		text-align: center;
-		padding: 2rem;
-		margin: 0;
-	}
-
-	table {
-		width: 100%;
-		border-collapse: collapse;
-	}
-
-	th,
-	td {
-		padding: 1rem;
-		text-align: left;
-		border-bottom: 1px solid #eee;
-	}
-
-	th {
-		background: #f9f9f9;
-		font-weight: 600;
-	}
-
-	select {
-		padding: 0.5rem;
-		border: 1px solid #ddd;
-		border-radius: 4px;
-		font-size: 0.9rem;
-	}
-
-	.badge {
-		display: inline-block;
-		padding: 0.35rem 0.75rem;
-		border-radius: 12px;
-		font-size: 0.85rem;
-		font-weight: 500;
-	}
-
-	.badge.pending {
-		background: #fff3cd;
-		color: #856404;
-	}
-
-	.badge.active {
-		background: #d4edda;
-		color: #155724;
-	}
-
-	.badge.suspended {
-		background: #f8d7da;
-		color: #721c24;
-	}
-
-	.btn-approve,
-	.btn-danger {
-		padding: 0.5rem 1rem;
-		border: none;
-		border-radius: 4px;
-		cursor: pointer;
-		font-size: 0.9rem;
-		display: inline-block;
-	}
-
-	.btn-approve {
-		background: #28a745;
-		color: white;
-	}
-
-	.btn-approve:hover {
-		background: #218838;
-	}
-
-	.btn-danger {
-		background: #dc3545;
-		color: white;
-	}
-
-	.btn-danger:hover {
-		background: #c82333;
-	}
-
-	.text-muted {
-		color: #999;
-	}
-
-	form {
-		display: inline;
-	}
+	.wrap { padding: var(--space-8) 0; }
+	h1 { margin-bottom: var(--space-6); }
+	h2 { margin: var(--space-8) 0 var(--space-4); font-size: var(--text-h3); }
+	.alert { padding: var(--space-3) var(--space-4); border-radius: var(--radius-sm); margin-bottom: var(--space-4); }
+	.alert.success { background: var(--color-amber-soft); color: var(--color-warn); }
+	.alert.error { background: #fde8e8; color: var(--color-danger); }
+	.empty { color: var(--color-ink-soft); }
+	table { width: 100%; border-collapse: collapse; }
+	th, td { padding: var(--space-3); text-align: left; border-bottom: 1px solid var(--color-border); font-size: var(--text-small); }
+	th { color: var(--color-ink-soft); font-weight: var(--weight-medium); }
+	.inline { display: inline; }
+	.cohort { width: 80px; padding: var(--space-1) var(--space-2); border: 1px solid var(--color-border); border-radius: var(--radius-sm); }
+	select { padding: var(--space-1) var(--space-2); border: 1px solid var(--color-border); border-radius: var(--radius-sm); }
+	.btn { padding: var(--space-1) var(--space-3); border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-card); cursor: pointer; font-size: var(--text-small); }
+	.btn.approve { background: var(--color-teal); color: #fff; border-color: var(--color-teal); }
+	.btn.danger { color: var(--color-danger); border-color: var(--color-danger); }
+	.badge { padding: 2px 8px; border-radius: var(--radius-sm); font-size: var(--text-caption); }
+	.badge.active { background: #e3f5ec; color: var(--color-success); }
+	.badge.suspended { background: #fde8e8; color: var(--color-danger); }
+	.badge.pending { background: var(--color-amber-soft); color: var(--color-warn); }
 </style>

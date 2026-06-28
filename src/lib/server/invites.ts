@@ -1,8 +1,9 @@
 import { eq, and, isNull, or, gt } from 'drizzle-orm';
+import type { DB } from './db/client';
 import { invites } from './db/schema';
 
 /** 回傳有效且未使用、未過期的邀請；否則回 null。 */
-export async function validateInvite(db: any, code: string) {
+export async function validateInvite(db: DB, code: string) {
 	const now = new Date();
 	const rows = await db
 		.select()

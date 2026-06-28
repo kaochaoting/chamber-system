@@ -1,23 +1,24 @@
 import type { Handle } from '@sveltejs/kit';
-import { getSessionUser, initializeDemoData } from '$lib/server/auth-simple';
-
-const SESSION_COOKIE = 'khubs_session';
-
-// Initialize demo data on startup
-initializeDemoData();
+import { createAuth } from '$lib/server/auth';
 
 export const handle: Handle = async ({ event, resolve }) => {
-	// Load session from cookie
-	const token = event.cookies.get(SESSION_COOKIE);
-	if (token) {
-		const user = getSessionUser(token);
-		if (user) {
-			event.locals.user = user;
-		}
-	}
+	const env = event.platform?.env as any;
 
-	event.locals.user ??= null;
-	event.locals.session ??= null;
+	if (env?.DB && env?.BETTER_AUTH_SECRET) {
+		try {
+			const auth = createAuth(env);
+			const data = await auth.api.getSession({ headers: event.request.headers });
+			event.locals.user = (data?.user as any) ?? null;
+			event.locals.session = (data?.session as any) ?? null;
+		} catch {
+			event.locals.user = null;
+			event.locals.session = null;
+		}
+	} else {
+		// 本機若未設定綁定/機密，避免整站崩潰
+		event.locals.user = null;
+		event.locals.session = null;
+	}
 
 	const path = event.url.pathname;
 	const isPrivate = path.startsWith('/app') || path.startsWith('/admin');

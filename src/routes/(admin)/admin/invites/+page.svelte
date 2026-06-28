@@ -1,153 +1,82 @@
 <script lang="ts">
-	let { data } = $props();
-	let cohort = '';
-
-	function handleGenerateCode() {
-		if (!cohort) {
-			alert('請填寫期別');
-			return;
-		}
-		// TODO: 實現生成邀請碼
-		alert(`已生成 ${cohort} 期的邀請碼`);
-		cohort = '';
-	}
+	import { enhance } from '$app/forms';
+	let { data, form } = $props();
 </script>
 
-<svelte:head>
-	<title>邀請碼管理｜高創坊</title>
-</svelte:head>
+<svelte:head><title>邀請碼管理｜後台</title></svelte:head>
 
-<div class="container">
-	<h1>🔐 邀請碼管理</h1>
+<div class="wrap">
+	<h1>邀請碼管理</h1>
 
-	<div class="panel">
+	{#if form?.success}
+		<div class="alert success">✓ 已產生邀請碼：<code>{form.code}</code></div>
+	{:else if form?.message}
+		<div class="alert error">✕ {form.message}</div>
+	{/if}
+
+	<section class="composer">
 		<h2>產生新邀請碼</h2>
-		<form onsubmit={(e) => { e.preventDefault(); handleGenerateCode(); }}>
-			<div class="form-group">
-				<label>期別（例：115、116）</label>
-				<input
-					type="text"
-					bind:value={cohort}
-					placeholder="期別編號"
-				/>
-			</div>
-			<button type="submit" class="btn">產生邀請碼</button>
+		<form method="POST" action="?/create" use:enhance class="form">
+			<label>
+				期別
+				<input type="text" name="cohort" placeholder="115" required />
+			</label>
+			<label>
+				自訂碼（選填）
+				<input type="text" name="code" placeholder="留空則自動產生" />
+			</label>
+			<button type="submit" class="btn primary">產生</button>
 		</form>
-	</div>
+	</section>
 
-	<div class="panel">
-		<h2>現有邀請碼</h2>
-		<table>
-			<thead>
-				<tr>
-					<th>邀請碼</th>
-					<th>期別</th>
-					<th>已使用</th>
-					<th>操作</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td><code>KLU-115-WELCOME</code></td>
-					<td>115</td>
-					<td>1</td>
-					<td><button class="btn-danger">停用</button></td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
+	<section>
+		<h2>所有邀請碼 ({data.invites.length})</h2>
+		{#if data.invites.length === 0}
+			<p class="empty">尚無邀請碼。</p>
+		{:else}
+			<table>
+				<thead>
+					<tr><th>邀請碼</th><th>期別</th><th>狀態</th></tr>
+				</thead>
+				<tbody>
+					{#each data.invites as inv (inv.code)}
+						<tr>
+							<td><code>{inv.code}</code></td>
+							<td>{inv.cohort}</td>
+							<td>
+								{#if inv.usedBy}
+									<span class="badge used">已使用</span>
+								{:else}
+									<span class="badge open">可用</span>
+								{/if}
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		{/if}
+	</section>
 </div>
 
 <style>
-	.container {
-		max-width: 800px;
-		margin: 0 auto;
-		padding: 2rem;
-	}
-
-	h1 {
-		margin-bottom: 2rem;
-	}
-
-	.panel {
-		background: white;
-		padding: 2rem;
-		border-radius: 8px;
-		border: 1px solid #ddd;
-		margin-bottom: 2rem;
-	}
-
-	.form-group {
-		margin-bottom: 1.5rem;
-	}
-
-	.form-group label {
-		display: block;
-		margin-bottom: 0.5rem;
-		font-weight: 500;
-	}
-
-	input {
-		width: 100%;
-		padding: 0.75rem;
-		border: 1px solid #ddd;
-		border-radius: 4px;
-		font-size: 1rem;
-	}
-
-	input:focus {
-		outline: none;
-		border-color: #007bff;
-	}
-
-	.btn,
-	.btn-danger {
-		padding: 0.75rem 1.5rem;
-		border: none;
-		border-radius: 4px;
-		cursor: pointer;
-		font-size: 0.9rem;
-	}
-
-	.btn {
-		background: #007bff;
-		color: white;
-	}
-
-	.btn:hover {
-		background: #0056b3;
-	}
-
-	.btn-danger {
-		background: #dc3545;
-		color: white;
-	}
-
-	.btn-danger:hover {
-		background: #c82333;
-	}
-
-	table {
-		width: 100%;
-		border-collapse: collapse;
-	}
-
-	th,
-	td {
-		padding: 1rem;
-		text-align: left;
-		border-bottom: 1px solid #eee;
-	}
-
-	th {
-		background: #f9f9f9;
-		font-weight: 600;
-	}
-
-	code {
-		background: #f4f4f4;
-		padding: 0.25rem 0.5rem;
-		border-radius: 3px;
-		font-family: monospace;
-	}
+	.wrap { padding: var(--space-8) 0; }
+	h1 { margin-bottom: var(--space-6); }
+	h2 { margin: var(--space-8) 0 var(--space-4); font-size: var(--text-h3); }
+	.alert { padding: var(--space-3) var(--space-4); border-radius: var(--radius-sm); margin-bottom: var(--space-4); }
+	.alert.success { background: var(--color-amber-soft); color: var(--color-warn); }
+	.alert.error { background: #fde8e8; color: var(--color-danger); }
+	.empty { color: var(--color-ink-soft); }
+	.composer { background: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-6); }
+	.form { display: flex; gap: var(--space-4); align-items: flex-end; flex-wrap: wrap; }
+	.form label { display: flex; flex-direction: column; gap: var(--space-1); font-size: var(--text-small); color: var(--color-ink-soft); }
+	.form input { padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border); border-radius: var(--radius-sm); }
+	table { width: 100%; border-collapse: collapse; }
+	th, td { padding: var(--space-3); text-align: left; border-bottom: 1px solid var(--color-border); font-size: var(--text-small); }
+	th { color: var(--color-ink-soft); font-weight: var(--weight-medium); }
+	code { font-family: var(--font-mono); background: var(--color-surface); padding: 2px 6px; border-radius: var(--radius-sm); }
+	.btn { padding: var(--space-2) var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-card); cursor: pointer; }
+	.btn.primary { background: var(--color-amber); color: #fff; border-color: var(--color-amber); }
+	.badge { padding: 2px 8px; border-radius: var(--radius-sm); font-size: var(--text-caption); }
+	.badge.open { background: #e3f5ec; color: var(--color-success); }
+	.badge.used { background: var(--color-surface); color: var(--color-ink-soft); }
 </style>
