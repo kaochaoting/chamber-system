@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { verifyPassword, createSession, getSessionUser, findUserByEmail, deleteSession } from '$lib/server/auth-simple';
+import { verifyPassword, createSession, getSessionUser, findUserByEmail, deleteSession, hashPassword, registerUser } from '$lib/server/auth-simple';
 import type { RequestHandler } from '@sveltejs/kit';
 
 const SESSION_COOKIE = 'khubs_session';
@@ -25,6 +25,19 @@ async function handleSignIn(request: Request, cookies: any) {
 
 		if (!email || !password) {
 			return json({ error: '信箱與密碼為必填。' }, { status: 400 });
+		}
+
+		// Ensure demo user exists (for first login)
+		if (email === 'demo@khubs.net' && !findUserByEmail(email)) {
+			const demoHash = await hashPassword('demo1234');
+			registerUser({
+				name: 'Demo User',
+				email: email,
+				passwordHash: demoHash,
+				status: 'active',
+				role: 'admin',
+				cohort: '115'
+			});
 		}
 
 		const user = findUserByEmail(email);
