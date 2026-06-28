@@ -37,8 +37,8 @@
 </script>
 
 <div class="container">
-	<h1>商會系統</h1>
-	<p>勞工大學創新創業專班的商會系統。</p>
+	<h1>高創坊</h1>
+	<p>高雄創新創業社群商會系統</p>
 
 	<div class="form-section">
 		<h2>會員註冊</h2>
