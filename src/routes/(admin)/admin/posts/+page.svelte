@@ -101,7 +101,7 @@
 									{post.published ? '取消發佈' : '發佈'}
 								</button>
 							</form>
-							<form method="POST" action="?/delete" style="display:inline" onsubmit="return confirm('確定要刪除嗎？')">
+							<form method="POST" action="?/delete" style="display:inline" onsubmit={(e) => { if (!confirm('確定要刪除嗎？')) e.preventDefault(); }}>
 								<input type="hidden" name="postId" value={post.id} />
 								<button type="submit" class="btn-delete">刪除</button>
 							</form>
