@@ -1,18 +1,15 @@
 import { json } from '@sveltejs/kit';
-import { eq } from 'drizzle-orm';
-import { verifyPassword, getSessionCookieName, createSessionToken, createSessionExpiresAt } from '$lib/server/auth';
-import { getDb } from '$lib/server/db/client';
-import { user as userTable, session as sessionTable } from '$lib/server/db/schema';
-import { v4 as uuidv4 } from 'uuid';
+import { verifyPassword, createSession, getSessionUser, findUserByEmail, deleteSession } from '$lib/server/auth-simple';
 import type { RequestHandler } from '@sveltejs/kit';
 
-export const POST: RequestHandler = async ({ request, platform, cookies }) => {
-	const env = platform!.env as any;
+const SESSION_COOKIE = 'khubs_session';
+
+export const POST: RequestHandler = async ({ request, cookies }) => {
 	const url = new URL(request.url);
 	const pathname = url.pathname;
 
 	if (pathname.endsWith('/sign-in/email')) {
-		return handleSignIn(request, env, cookies);
+		return handleSignIn(request, cookies);
 	}
 
 	if (pathname.endsWith('/sign-out')) {
@@ -22,7 +19,7 @@ export const POST: RequestHandler = async ({ request, platform, cookies }) => {
 	return json({ error: 'Not found' }, { status: 404 });
 };
 
-async function handleSignIn(request: Request, env: any, cookies: any) {
+async function handleSignIn(request: Request, cookies: any) {
 	try {
 		const { email, password } = await request.json();
 
@@ -30,37 +27,21 @@ async function handleSignIn(request: Request, env: any, cookies: any) {
 			return json({ error: '信箱與密碼為必填。' }, { status: 400 });
 		}
 
-		const db = getDb(env.DB);
-
-		// 查詢使用者
-		const users = await db.select().from(userTable).where(eq(userTable.email, email));
-		if (users.length === 0) {
+		const user = findUserByEmail(email);
+		if (!user) {
 			return json({ error: '登入失敗。' }, { status: 401 });
 		}
 
-		const user = users[0];
 		const isValid = await verifyPassword(password, user.passwordHash);
 		if (!isValid) {
 			return json({ error: '登入失敗。' }, { status: 401 });
 		}
 
-		// 建立 session
-		const sessionId = uuidv4();
-		const token = createSessionToken();
-		const expiresAt = createSessionExpiresAt();
-		const now = new Date();
+		// Create session
+		const token = createSession(user.id);
 
-		await db.insert(sessionTable).values({
-			id: sessionId,
-			userId: user.id,
-			token,
-			expiresAt,
-			createdAt: now,
-			updatedAt: now
-		});
-
-		// 設置 cookie
-		cookies.set(getSessionCookieName(), token, {
+		// Set cookie
+		cookies.set(SESSION_COOKIE, token, {
 			path: '/',
 			httpOnly: true,
 			sameSite: 'lax',
@@ -74,6 +55,10 @@ async function handleSignIn(request: Request, env: any, cookies: any) {
 }
 
 function handleSignOut(cookies: any) {
-	cookies.delete(getSessionCookieName(), { path: '/' });
+	const token = cookies.get(SESSION_COOKIE);
+	if (token) {
+		deleteSession(token);
+		cookies.delete(SESSION_COOKIE, { path: '/' });
+	}
 	return json({ success: true });
 }

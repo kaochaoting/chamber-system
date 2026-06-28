@@ -1,15 +1,12 @@
-import { fail, redirect, type Cookies } from '@sveltejs/kit';
-import { eq } from 'drizzle-orm';
-import { v4 as uuidv4 } from 'uuid';
-import { hashPassword, getSessionCookieName, createSessionExpiresAt, createSessionToken } from '$lib/server/auth';
-import { getDb } from '$lib/server/db/client';
-import { validateInvite, consumeInvite } from '$lib/server/invites';
-import { user as userTable, session as sessionTable } from '$lib/server/db/schema';
+import { fail, redirect } from '@sveltejs/kit';
+import { hashPassword, registerUser, findUserByEmail, createSession } from '$lib/server/auth-simple';
 import type { Actions } from './$types';
 
+const INVITE_CODE_ACTIVE = 'KLU-115-WELCOME';
+const SESSION_COOKIE = 'khubs_session';
+
 export const actions: Actions = {
-	default: async ({ request, platform, cookies }) => {
-		const env = platform!.env as any;
+	default: async ({ request, cookies }) => {
 		const form = await request.formData();
 		const name = String(form.get('name') ?? '').trim();
 		const email = String(form.get('email') ?? '').trim();
@@ -23,73 +20,42 @@ export const actions: Actions = {
 			return fail(400, { name, email, message: '密碼至少 8 碼。' });
 		}
 
-		const db = getDb(env.DB);
-
-		// 檢查 email 是否已存在
-		const existing = await db.select().from(userTable).where(eq(userTable.email, email));
-		if (existing.length > 0) {
+		// Check if email already exists
+		const existing = findUserByEmail(email);
+		if (existing) {
 			return fail(400, { name, email, message: '此信箱已被使用。' });
 		}
 
-		// 邀請碼路徑：先驗證碼有效
-		let invite = null;
-		if (code) {
-			invite = await validateInvite(db, code);
-			if (!invite) return fail(400, { name, email, message: '邀請碼無效或已過期。' });
-		}
-
 		try {
-			const userId = uuidv4();
 			const passwordHash = await hashPassword(password);
-			const now = new Date();
 
-			// 建立 user
-			await db.insert(userTable).values({
-				id: userId,
+			// Determine status based on invite code
+			const isActive = code === INVITE_CODE_ACTIVE;
+			const cohort = isActive ? '115' : undefined;
+
+			// Register user
+			const user = registerUser({
 				name,
 				email,
 				passwordHash,
-				status: invite ? 'active' : 'pending',
-				cohort: invite?.cohort || null,
-				role: 'member',
-				createdAt: now,
-				updatedAt: now
+				status: isActive ? 'active' : 'pending',
+				cohort
 			});
 
-			// 如果有邀請碼，消費它
-			if (invite) {
-				await consumeInvite(db, code, userId);
-			}
-
-			// 建立 session
-			const sessionId = uuidv4();
-			const token = createSessionToken();
-			const expiresAt = createSessionExpiresAt();
-
-			await db.insert(sessionTable).values({
-				id: sessionId,
-				userId,
-				token,
-				expiresAt,
-				createdAt: now,
-				updatedAt: now
-			});
-
-			// 設置 session cookie
-			cookies.set(getSessionCookieName(), token, {
+			// Create session and set cookie
+			const token = createSession(user.id);
+			cookies.set(SESSION_COOKIE, token, {
 				path: '/',
 				httpOnly: true,
 				sameSite: 'lax',
 				maxAge: 30 * 24 * 60 * 60 // 30 days
 			});
 
-			throw redirect(303, invite ? '/app' : '/pending');
+			throw redirect(303, isActive ? '/app' : '/pending');
 		} catch (err) {
-			// 重新拋出 redirect
-			if (err instanceof Error && 'status' in err && err.status) {
+			if (err instanceof Error && 'status' in err && (err as any).status) {
 				throw err;
 			}
-			console.error('Registration error:', err);
 			return fail(400, { name, email, message: '註冊失敗，請稍後重試。' });
 		}
 	}
