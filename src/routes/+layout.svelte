@@ -6,9 +6,6 @@
 <header class="nav">
 	<a href="/" class="brand">高創坊</a>
 	<nav>
-		<a href="/members">會員名錄</a>
-		<a href="/directory">產品服務</a>
-		<a href="/news">最新消息</a>
 		{#if data.user}
 			<a href="/app" class="cta">會員中心</a>
 		{:else}
