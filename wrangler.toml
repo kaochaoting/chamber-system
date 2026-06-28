@@ -1,0 +1,12 @@
+name = "khubs"
+type = "javascript"
+
+[build]
+command = "npm run build"
+cwd = "./"
+
+[build.upload]
+format = "service-worker"
+
+[env.production]
+# 高創坊 - khubs.net 部署配置
