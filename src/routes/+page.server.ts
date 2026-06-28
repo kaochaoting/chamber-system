@@ -50,7 +50,7 @@ export const actions: Actions = {
 				email,
 				passwordHash,
 				status: invite ? 'active' : 'pending',
-				cohort: invite?.cohort,
+				cohort: invite?.cohort || null,
 				role: 'member',
 				createdAt: now,
 				updatedAt: now
@@ -85,7 +85,11 @@ export const actions: Actions = {
 
 			throw redirect(303, invite ? '/app' : '/pending');
 		} catch (err) {
-			if (err instanceof Error && 'status' in err) throw err; // 重新拋出 redirect
+			// 重新拋出 redirect
+			if (err instanceof Error && 'status' in err && err.status) {
+				throw err;
+			}
+			console.error('Registration error:', err);
 			return fail(400, { name, email, message: '註冊失敗，請稍後重試。' });
 		}
 	}

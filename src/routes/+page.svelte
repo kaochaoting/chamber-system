@@ -1,29 +1,44 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
-
-	let inviteCode = '';
+	let name = '';
+	let email = '';
+	let password = '';
+	let invite = '';
 	let error = '';
+	let loading = false;
 
-	$: if ($page.data.user) {
-		if ($page.data.user.status === 'active') {
-			goto('/app');
-		} else {
-			goto('/pending');
-		}
-	}
+	async function handleSubmit(e: Event) {
+		e.preventDefault();
+		error = '';
+		loading = true;
 
-	function handleRegisterClick() {
-		const form = document.querySelector('form') as HTMLFormElement;
-		if (form) {
-			form.submit();
+		try {
+			const formData = new FormData();
+			formData.append('name', name);
+			formData.append('email', email);
+			formData.append('password', password);
+			formData.append('invite', invite);
+
+			const response = await fetch('/', {
+				method: 'POST',
+				body: formData
+			});
+
+			if (response.ok) {
+				// Server will redirect
+			} else {
+				error = '註冊失敗，請檢查輸入後重試。';
+			}
+		} catch (err) {
+			error = '網路錯誤，請稍後重試。';
+		} finally {
+			loading = false;
 		}
 	}
 </script>
 
 <div class="container">
 	<h1>商會系統</h1>
-	<p>勞工大學創新創業專班的雙層商會系統。</p>
+	<p>勞工大學創新創業專班的商會系統。</p>
 
 	<div class="form-section">
 		<h2>會員註冊</h2>
@@ -32,15 +47,16 @@
 			<div class="error">{error}</div>
 		{/if}
 
-		<form method="POST" action="?/default" class="register-form">
+		<form on:submit={handleSubmit} class="register-form">
 			<div class="form-group">
 				<label for="name">姓名</label>
 				<input
 					type="text"
 					id="name"
-					name="name"
+					bind:value={name}
 					required
 					placeholder="請輸入姓名"
+					disabled={loading}
 				/>
 			</div>
 
@@ -49,9 +65,10 @@
 				<input
 					type="email"
 					id="email"
-					name="email"
+					bind:value={email}
 					required
 					placeholder="your@email.com"
+					disabled={loading}
 				/>
 			</div>
 
@@ -60,10 +77,11 @@
 				<input
 					type="password"
 					id="password"
-					name="password"
+					bind:value={password}
 					required
 					minlength="8"
 					placeholder="至少 8 碼"
+					disabled={loading}
 				/>
 			</div>
 
@@ -72,12 +90,12 @@
 				<input
 					type="text"
 					id="invite"
-					name="invite"
-					bind:value={inviteCode}
+					bind:value={invite}
 					placeholder="例: KLU-115-WELCOME"
+					disabled={loading}
 				/>
 				<small>
-					{#if inviteCode}
+					{#if invite}
 						帶邀請碼註冊會直接進入成員區域
 					{:else}
 						不帶邀請碼會進入待核准狀態
@@ -85,8 +103,14 @@
 				</small>
 			</div>
 
-			<button type="submit">註冊</button>
+			<button type="submit" disabled={loading}>
+				{loading ? '註冊中...' : '註冊'}
+			</button>
 		</form>
+
+		<p class="footer-text">
+			已有帳號？<a href="/login">前往登入</a>
+		</p>
 	</div>
 </div>
 
@@ -146,6 +170,11 @@
 		box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
 	}
 
+	input:disabled {
+		background: #f5f5f5;
+		cursor: not-allowed;
+	}
+
 	small {
 		display: block;
 		margin-top: 0.5rem;
@@ -166,8 +195,13 @@
 		transition: background 0.2s;
 	}
 
-	button:hover {
+	button:hover:not(:disabled) {
 		background: #0056b3;
+	}
+
+	button:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
 	}
 
 	.error {
@@ -176,5 +210,22 @@
 		padding: 1rem;
 		border-radius: 4px;
 		margin-bottom: 1rem;
+		font-size: 0.875rem;
+	}
+
+	.footer-text {
+		text-align: center;
+		font-size: 0.875rem;
+		color: #666;
+		margin-top: 1.5rem !important;
+	}
+
+	.footer-text a {
+		color: #007bff;
+		text-decoration: none;
+	}
+
+	.footer-text a:hover {
+		text-decoration: underline;
 	}
 </style>
