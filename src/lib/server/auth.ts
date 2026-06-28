@@ -1,57 +1,47 @@
-import { betterAuth } from 'better-auth';
-import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { sveltekitCookies } from 'better-auth/svelte-kit';
-import { getRequestEvent } from '$app/server';
-import type { D1Database } from '@cloudflare/workers-types';
-import { getDb } from './db/client';
-import * as schema from './db/schema';
+import bcryptjs from 'bcryptjs';
+import { v4 as uuidv4 } from 'uuid';
 
-export type AuthEnv = {
-	DB: D1Database;
-	BETTER_AUTH_SECRET: string;
-	BETTER_AUTH_URL?: string;
-	GOOGLE_CLIENT_ID?: string;
-	GOOGLE_CLIENT_SECRET?: string;
-};
-
-/**
- * 以請求環境建立 Better Auth 實例（Workers 需請求內注入 D1 綁定）。
- *
- * ⚠️ 第一次部署的最高風險點（見 docs/SSD.md §10）：
- *  - db 由 platform.env.DB 注入、adapter provider = 'sqlite'
- *  - sveltekitCookies 必須是 plugins 陣列的「最後一個」
- *  - 新帳號 status 預設 'pending'（Google 也是）；email 邀請碼路徑於 register action 升級為 'active'
- */
-export function createAuth(env: AuthEnv) {
-	const db = getDb(env.DB);
-
-	const social =
-		env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET
-			? { google: { clientId: env.GOOGLE_CLIENT_ID, clientSecret: env.GOOGLE_CLIENT_SECRET } }
-			: undefined;
-
-	return betterAuth({
-		baseURL: env.BETTER_AUTH_URL,
-		secret: env.BETTER_AUTH_SECRET,
-		database: drizzleAdapter(db, { provider: 'sqlite', schema }),
-		emailAndPassword: { enabled: true, minPasswordLength: 8 },
-		socialProviders: social,
-		user: {
-			additionalFields: {
-				role: { type: 'string', defaultValue: 'member', input: false },
-				status: { type: 'string', defaultValue: 'pending', input: false },
-				cohort: { type: 'string', required: false, input: false }
-			}
-		},
-		plugins: [sveltekitCookies(getRequestEvent)] // ← 必須置於最後
-	});
+export interface Session {
+	id: string;
+	userId: string;
+	token: string;
+	expiresAt: Date;
+	ipAddress?: string;
+	userAgent?: string;
 }
 
-export type Auth = ReturnType<typeof createAuth>;
+export interface User {
+	id: string;
+	email: string;
+	name: string;
+	passwordHash: string;
+	role: 'member' | 'mentor' | 'assistant' | 'admin';
+	status: 'pending' | 'active' | 'suspended';
+	cohort?: string;
+	createdAt: Date;
+	updatedAt: Date;
+}
 
-// Better Auth CLI 需要
-export const auth = createAuth({
-	DB: null as any,
-	BETTER_AUTH_SECRET: 'placeholder',
-	BETTER_AUTH_URL: 'http://localhost:5173'
-});
+const SALT_ROUNDS = 10;
+const SESSION_MAX_AGE = 1000 * 60 * 60 * 24 * 30; // 30 days
+const SESSION_COOKIE_NAME = 'khubs_session';
+
+export async function hashPassword(password: string): Promise<string> {
+	return bcryptjs.hash(password, SALT_ROUNDS);
+}
+
+export async function verifyPassword(password: string, hash: string): Promise<boolean> {
+	return bcryptjs.compare(password, hash);
+}
+
+export function createSessionToken(): string {
+	return uuidv4();
+}
+
+export function createSessionExpiresAt(): Date {
+	return new Date(Date.now() + SESSION_MAX_AGE);
+}
+
+export function getSessionCookieName(): string {
+	return SESSION_COOKIE_NAME;
+}

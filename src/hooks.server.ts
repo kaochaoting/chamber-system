@@ -1,24 +1,45 @@
 import type { Handle } from '@sveltejs/kit';
-import { createAuth } from '$lib/server/auth';
+import { eq } from 'drizzle-orm';
+import { getDb } from '$lib/server/db/client';
+import { getSessionCookieName } from '$lib/server/auth';
+import { user as userTable, session as sessionTable } from '$lib/server/db/schema';
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const env = event.platform?.env as any;
 
-	if (env?.DB && env?.BETTER_AUTH_SECRET) {
+	if (env?.DB) {
 		try {
-			const auth = createAuth(env);
-			const data = await auth.api.getSession({ headers: event.request.headers });
-			event.locals.user = (data?.user as any) ?? null;
-			event.locals.session = (data?.session as any) ?? null;
+			const token = event.cookies.get(getSessionCookieName());
+			if (token) {
+				const db = getDb(env.DB);
+
+				// 查詢 session
+				const sessions = await db
+					.select()
+					.from(sessionTable)
+					.where(eq(sessionTable.token, token));
+
+				if (sessions.length > 0) {
+					const session = sessions[0];
+
+					// 檢查 session 是否過期
+					if (new Date(session.expiresAt) > new Date()) {
+						const users = await db.select().from(userTable).where(eq(userTable.id, session.userId));
+						if (users.length > 0) {
+							const user = users[0];
+							event.locals.user = user;
+							event.locals.session = session;
+						}
+					}
+				}
+			}
 		} catch {
-			event.locals.user = null;
-			event.locals.session = null;
+			// 出錯時，不中斷請求
 		}
-	} else {
-		// 本機若未設定綁定/機密，避免整站崩潰
-		event.locals.user = null;
-		event.locals.session = null;
 	}
+
+	event.locals.user ??= null;
+	event.locals.session ??= null;
 
 	const path = event.url.pathname;
 	const isPrivate = path.startsWith('/app') || path.startsWith('/admin');

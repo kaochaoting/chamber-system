@@ -14,7 +14,8 @@ export const user = sqliteTable('user', {
 	email: text('email').notNull().unique(),
 	emailVerified: integer('email_verified', { mode: 'boolean' }).notNull().default(false),
 	image: text('image'),
-	// ── 自訂欄位（additionalFields）──
+	passwordHash: text('password_hash').notNull().default(''), // bcryptjs hash
+	// ── 自訂欄位──
 	role: text('role').notNull().default('member'), // member | mentor | assistant | admin
 	status: text('status').notNull().default('pending'), // pending | active | suspended
 	cohort: text('cohort'), // 期別，例 "115"
