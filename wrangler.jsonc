@@ -1,0 +1,46 @@
+{
+  // Cloudflare Workers 設定（SvelteKit + adapter-cloudflare）
+  // 文件：https://developers.cloudflare.com/workers/wrangler/configuration/
+  "name": "chamber-system",
+  "compatibility_date": "2026-06-01",
+
+  // nodejs_compat：相依套件的 Node API 相容。
+  // 註：部分 SvelteKit 版本另需 "nodejs_als"（async context）。
+  //     若 build/dev 出現 AsyncLocalStorage 相關錯誤，請補上。【需依版本驗證】
+  "compatibility_flags": ["nodejs_compat"],
+
+  // adapter-cloudflare 產出於 .svelte-kit/cloudflare/（勿改成 dist/）
+  "main": ".svelte-kit/cloudflare/_worker.js",
+  "assets": {
+    "directory": ".svelte-kit/cloudflare",
+    "binding": "ASSETS"
+  },
+
+  "workers_dev": true,
+  "preview_urls": true,
+
+  // ── 綁定（建立資源後把 id 填回）──────────────────────────
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "chamber-db",
+      "database_id": "<填入 wrangler d1 create 回傳的 id>",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "BUCKET",
+      "bucket_name": "chamber-assets"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "<填入 wrangler kv namespace create 回傳的 id>"
+    }
+  ]
+
+  // 機密（BETTER_AUTH_SECRET / GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET）
+  // 本機放 .dev.vars；正式環境用：wrangler secret put <NAME>
+}

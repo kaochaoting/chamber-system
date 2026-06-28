@@ -1,0 +1,127 @@
+/* ============================================================
+   商會系統 — 設計 Tokens（單一事實來源）
+   主題：港都凱洛斯 Harbour Kairos
+   所有元件僅引用變數，不硬編色值。對應 docs/DESIGN_SYSTEM.md
+   ============================================================ */
+
+:root {
+	/* ── 色彩（Light）──────────────────────────── */
+	--color-ink: #15213a; /* 主文字／品牌底 */
+	--color-ink-soft: #41506b; /* 次要文字 */
+	--color-surface: #f7f8fa; /* 頁面背景（冷紙，非奶油） */
+	--color-card: #ffffff; /* 卡片面 */
+	--color-border: #e2e6ee; /* 分隔／框線 */
+	--color-teal: #1f6f6b; /* 連結／資訊（港灣青） */
+	--color-amber: #d98324; /* 決斷色／CTA／印章 */
+	--color-amber-soft: #fbead3; /* 印章底／高亮背景 */
+	--color-success: #2e7d5b;
+	--color-warn: #b06a12;
+	--color-danger: #b23a48;
+
+	/* ── 字體 ──────────────────────────────────── */
+	--font-display: 'Noto Serif TC', 'Songti TC', serif; /* 標題：宋體 */
+	--font-body: 'Inter', 'Noto Sans TC', system-ui, sans-serif; /* 內文：黑體 */
+	--font-mono: 'IBM Plex Mono', ui-monospace, monospace; /* 數據／標籤 */
+
+	/* 字級（CJK 內文行高刻意拉高） */
+	--text-display: 3rem; /* 48px */
+	--text-h1: 2rem; /* 32px */
+	--text-h2: 1.5rem; /* 24px */
+	--text-h3: 1.25rem; /* 20px */
+	--text-body: 1rem; /* 16px */
+	--text-small: 0.875rem; /* 14px */
+	--text-caption: 0.75rem; /* 12px */
+
+	--leading-display: 1.25;
+	--leading-heading: 1.35;
+	--leading-body: 1.8; /* 中文可讀性 */
+	--leading-small: 1.7;
+
+	--weight-regular: 400;
+	--weight-medium: 500;
+	--weight-bold: 700;
+
+	/* ── 間距（4px 基準）───────────────────────── */
+	--space-1: 4px;
+	--space-2: 8px;
+	--space-3: 12px;
+	--space-4: 16px;
+	--space-6: 24px;
+	--space-8: 32px;
+	--space-12: 48px;
+	--space-16: 64px;
+
+	/* ── 圓角 ──────────────────────────────────── */
+	--radius-sm: 6px;
+	--radius-md: 12px;
+	--radius-lg: 16px;
+	--radius-seal: 8px;
+
+	/* ── 陰影（克制）──────────────────────────── */
+	--shadow-sm: 0 1px 2px rgba(21, 33, 58, 0.06);
+	--shadow-md: 0 4px 16px rgba(21, 33, 58, 0.08);
+
+	/* ── 動效 ──────────────────────────────────── */
+	--ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+	--dur: 180ms;
+
+	/* ── 版面 ──────────────────────────────────── */
+	--content-max: 1120px;
+	--focus-ring: 0 0 0 3px color-mix(in srgb, var(--color-amber) 45%, transparent);
+}
+
+/* ── 深色模式 ─────────────────────────────────── */
+[data-theme='dark'] {
+	--color-ink: #e8ecf5;
+	--color-ink-soft: #a9b4ca;
+	--color-surface: #0e1626;
+	--color-card: #16213a;
+	--color-border: #2a3550;
+	--color-teal: #4fb3ad;
+	--color-amber: #e8a33d;
+	--color-amber-soft: #3a2c18;
+	--color-success: #5fc79a;
+	--color-warn: #e0a857;
+	--color-danger: #e2727e;
+
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+	--shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+/* ── 基礎套用 ─────────────────────────────────── */
+body {
+	background: var(--color-surface);
+	color: var(--color-ink);
+	font-family: var(--font-body);
+	font-size: var(--text-body);
+	line-height: var(--leading-body);
+}
+
+h1,
+h2,
+h3 {
+	font-family: var(--font-display);
+	color: var(--color-ink);
+	line-height: var(--leading-heading);
+}
+
+a {
+	color: var(--color-teal);
+}
+
+:focus-visible {
+	outline: none;
+	box-shadow: var(--focus-ring);
+	border-radius: var(--radius-sm);
+}
+
+/* 尊重減少動態偏好 */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}
