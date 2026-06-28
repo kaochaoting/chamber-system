@@ -82,11 +82,11 @@
 			</thead>
 			<tbody>
 				{#each data.allUsers as user (user.email)}
+					{@const badge = getStatusBadge(user.status)}
 					<tr>
 						<td>{user.name}</td>
 						<td>{user.email}</td>
 						<td>
-							{@const badge = getStatusBadge(user.status)}
 							<span class="badge {badge.class}">{badge.text}</span>
 						</td>
 						<td>

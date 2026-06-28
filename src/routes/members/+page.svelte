@@ -32,7 +32,7 @@
 					<p class="bio">{member.profile.bio}</p>
 				{/if}
 				{#if member.profile?.website}
-					<p><a href={member.profile.website} target="_blank" onclick={(e) => e.preventDefault(); window.open(member.profile.website)}>📌 {member.profile.website}</a></p>
+					<p><a href={member.profile.website} target="_blank">📌 {member.profile.website}</a></p>
 				{/if}
 				{#if member.profile?.publicEmail}
 					<p><strong>聯絡：</strong> {member.profile.publicEmail}</p>
