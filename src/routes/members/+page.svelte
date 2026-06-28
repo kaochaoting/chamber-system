@@ -2,10 +2,12 @@
 	let { data } = $props();
 	let searchEmail = $state('');
 
-	$: filteredMembers = data.members.filter(m =>
-		m.name.toLowerCase().includes(searchEmail.toLowerCase()) ||
-		m.email.toLowerCase().includes(searchEmail.toLowerCase()) ||
-		m.profile?.displayName.toLowerCase().includes(searchEmail.toLowerCase())
+	const filteredMembers = $derived.by(() =>
+		data.members.filter(m =>
+			m.name.toLowerCase().includes(searchEmail.toLowerCase()) ||
+			m.email.toLowerCase().includes(searchEmail.toLowerCase()) ||
+			m.profile?.displayName.toLowerCase().includes(searchEmail.toLowerCase())
+		)
 	);
 </script>
 
