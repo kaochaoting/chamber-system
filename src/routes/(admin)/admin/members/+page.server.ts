@@ -1,5 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { getAllUsers, getPendingUsers, updateUserStatus, updateUserRole } from '$lib/server/auth-simple';
+import { logAudit, AUDIT_ACTIONS } from '$lib/server/audit';
 
 export async function load() {
 	const allUsers = getAllUsers();
@@ -12,7 +13,7 @@ export async function load() {
 }
 
 export const actions = {
-	approve: async ({ request }) => {
+	approve: async ({ request, locals }) => {
 		const data = await request.formData();
 		const email = data.get('email') as string;
 
@@ -25,10 +26,15 @@ export const actions = {
 			return { success: false, error: '用戶不存在' };
 		}
 
+		// 記錄審計
+		if (locals.user) {
+			logAudit(locals.user.id, AUDIT_ACTIONS.USER_APPROVED, email, { newStatus: 'active' });
+		}
+
 		return { success: true, user: updated };
 	},
 
-	updateRole: async ({ request }) => {
+	updateRole: async ({ request, locals }) => {
 		const data = await request.formData();
 		const email = data.get('email') as string;
 		const role = data.get('role') as any;
@@ -42,10 +48,15 @@ export const actions = {
 			return { success: false, error: '用戶不存在' };
 		}
 
+		// 記錄審計
+		if (locals.user) {
+			logAudit(locals.user.id, AUDIT_ACTIONS.ROLE_CHANGED, email, { newRole: role });
+		}
+
 		return { success: true, user: updated };
 	},
 
-	suspend: async ({ request }) => {
+	suspend: async ({ request, locals }) => {
 		const data = await request.formData();
 		const email = data.get('email') as string;
 
@@ -56,6 +67,11 @@ export const actions = {
 		const updated = updateUserStatus(email, 'suspended');
 		if (!updated) {
 			return { success: false, error: '用戶不存在' };
+		}
+
+		// 記錄審計
+		if (locals.user) {
+			logAudit(locals.user.id, AUDIT_ACTIONS.USER_SUSPENDED, email);
 		}
 
 		return { success: true, user: updated };

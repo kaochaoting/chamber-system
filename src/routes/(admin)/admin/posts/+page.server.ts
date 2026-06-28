@@ -1,4 +1,5 @@
 import { getAllPosts, createPost, updatePost, deletePost } from '$lib/server/data-store';
+import { logAudit, AUDIT_ACTIONS } from '$lib/server/audit';
 
 export async function load({ locals }) {
 	const allPosts = getAllPosts();
@@ -37,13 +38,19 @@ export const actions = {
 				createdBy: locals.user.id
 			});
 
+			// 記錄審計
+			logAudit(locals.user.id, AUDIT_ACTIONS.POST_CREATED, post.id, {
+				title,
+				published: isPublished
+			});
+
 			return { success: true, post };
 		} catch (error) {
 			return { success: false, error: '發佈失敗' };
 		}
 	},
 
-	delete: async ({ request }) => {
+	delete: async ({ request, locals }) => {
 		const data = await request.formData();
 		const postId = data.get('postId') as string;
 
@@ -53,13 +60,19 @@ export const actions = {
 
 		try {
 			deletePost(postId);
+
+			// 記錄審計
+			if (locals.user) {
+				logAudit(locals.user.id, AUDIT_ACTIONS.POST_DELETED, postId);
+			}
+
 			return { success: true };
 		} catch (error) {
 			return { success: false, error: '刪除失敗' };
 		}
 	},
 
-	togglePublish: async ({ request }) => {
+	togglePublish: async ({ request, locals }) => {
 		const data = await request.formData();
 		const postId = data.get('postId') as string;
 		const published = data.get('published') === 'true';
@@ -70,6 +83,14 @@ export const actions = {
 
 		try {
 			updatePost(postId, { published: !published });
+
+			// 記錄審計
+			if (locals.user) {
+				logAudit(locals.user.id, published ? AUDIT_ACTIONS.POST_CREATED : AUDIT_ACTIONS.POST_PUBLISHED, postId, {
+					published: !published
+				});
+			}
+
 			return { success: true };
 		} catch (error) {
 			return { success: false, error: '更新失敗' };

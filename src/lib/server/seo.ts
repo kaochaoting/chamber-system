@@ -1,50 +1,75 @@
-type Json = Record<string, unknown>;
+// JSON-LD Schema 生成工具
 
-/** 成員（Person）+ 其創業（Organization）的 JSON-LD。 */
-export function memberJsonLd(opts: {
+export interface PersonSchema {
 	name: string;
-	url: string;
-	bio?: string | null;
-	socials?: Record<string, string> | null;
-	venture?: { name: string; url?: string | null; description?: string | null } | null;
-}): Json {
-	const person: Json = {
+	url?: string;
+	image?: string;
+	description?: string;
+	email?: string;
+	contactPoint?: {
+		telephone?: string;
+	};
+}
+
+export interface OrganizationSchema {
+	name: string;
+	url?: string;
+	image?: string;
+	description?: string;
+	foundingDate?: string;
+}
+
+export interface ArticleSchema {
+	headline: string;
+	description: string;
+	image?: string;
+	datePublished: string;
+	dateModified: string;
+	author: {
+		name: string;
+	};
+}
+
+export function generatePersonSchema(data: PersonSchema): string {
+	const schema = {
 		'@context': 'https://schema.org',
 		'@type': 'Person',
-		name: opts.name,
-		url: opts.url
+		name: data.name,
+		...(data.url && { url: data.url }),
+		...(data.image && { image: data.image }),
+		...(data.description && { description: data.description }),
+		...(data.email && { email: data.email }),
+		...(data.contactPoint && { contactPoint: data.contactPoint })
 	};
-	if (opts.bio) person.description = opts.bio;
-	if (opts.socials) person.sameAs = Object.values(opts.socials).filter(Boolean);
-	if (opts.venture) {
-		person.worksFor = {
-			'@type': 'Organization',
-			name: opts.venture.name,
-			...(opts.venture.url ? { url: opts.venture.url } : {}),
-			...(opts.venture.description ? { description: opts.venture.description } : {})
-		};
-	}
-	return person;
+
+	return JSON.stringify(schema);
 }
 
-/** 文章（Article）JSON-LD。 */
-export function articleJsonLd(opts: {
-	title: string;
-	url: string;
-	authorName: string;
-	datePublished: string;
-}): Json {
-	return {
+export function generateOrganizationSchema(data: OrganizationSchema): string {
+	const schema = {
 		'@context': 'https://schema.org',
-		'@type': 'Article',
-		headline: opts.title,
-		url: opts.url,
-		author: { '@type': 'Person', name: opts.authorName },
-		datePublished: opts.datePublished
+		'@type': 'Organization',
+		name: data.name,
+		...(data.url && { url: data.url }),
+		...(data.image && { image: data.image }),
+		...(data.description && { description: data.description }),
+		...(data.foundingDate && { foundingDate: data.foundingDate })
 	};
+
+	return JSON.stringify(schema);
 }
 
-/** 將物件轉為可直接放入 <script> 的字串（已防 </script> 注入）。 */
-export function jsonLdScript(data: Json): string {
-	return JSON.stringify(data).replace(/</g, '\\u003c');
+export function generateArticleSchema(data: ArticleSchema): string {
+	const schema = {
+		'@context': 'https://schema.org',
+		'@type': 'BlogPosting',
+		headline: data.headline,
+		description: data.description,
+		...(data.image && { image: data.image }),
+		datePublished: data.datePublished,
+		dateModified: data.dateModified,
+		author: data.author
+	};
+
+	return JSON.stringify(schema);
 }
