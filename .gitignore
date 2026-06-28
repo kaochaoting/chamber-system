@@ -39,3 +39,4 @@ yarn-error.log*
 chamber-system-extracted/
 chamber-system.zip
 *.zip
+.gstack/

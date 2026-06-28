@@ -9,9 +9,10 @@
 	.seal {
 		width: var(--seal-size); height: var(--seal-size);
 		display: grid; place-items: center; flex: none;
-		border: 2px solid var(--color-amber); border-radius: var(--radius-seal);
-		background: var(--color-amber-soft); color: var(--color-amber);
-		font-family: var(--font-display); font-size: calc(var(--seal-size) * 0.42);
+		border-radius: var(--radius-md);
+		background: var(--color-ink); color: var(--color-accent);
+		font-family: var(--font-display); font-weight: var(--weight-bold);
+		font-size: calc(var(--seal-size) * 0.42);
 		line-height: 1;
 	}
 </style>

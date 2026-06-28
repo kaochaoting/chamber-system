@@ -1,44 +1,51 @@
 /* ============================================================
-   商會系統 — 設計 Tokens（單一事實來源）
-   主題：港都凱洛斯 Harbour Kairos
-   所有元件僅引用變數，不硬編色值。對應 docs/DESIGN_SYSTEM.md
+   高創坊 — 設計 Tokens（單一事實來源）
+   主題：創業活力（web-agency 風格）— 深 navy-black × 萊姆綠
+   所有元件僅引用變數，不硬編色值。
    ============================================================ */
 
 :root {
-	/* ── 色彩（Light）──────────────────────────── */
-	--color-ink: #15213a; /* 主文字／品牌底 */
-	--color-ink-soft: #41506b; /* 次要文字 */
-	--color-surface: #f7f8fa; /* 頁面背景（冷紙，非奶油） */
+	/* ── 色彩 ──────────────────────────────────── */
+	--color-ink: #12141d; /* 主文字／深色底（hero／footer） */
+	--color-ink-soft: #5b6472; /* 次要文字（灰） */
+	--color-surface: #ffffff; /* 頁面背景（白） */
+	--color-surface-alt: #f4f6f8; /* 交錯區塊淺灰底 */
 	--color-card: #ffffff; /* 卡片面 */
-	--color-border: #e2e6ee; /* 分隔／框線 */
-	--color-teal: #1f6f6b; /* 連結／資訊（港灣青） */
-	--color-amber: #d98324; /* 決斷色／CTA／印章 */
-	--color-amber-soft: #fbead3; /* 印章底／高亮背景 */
+	--color-border: #e6e8ee; /* 分隔／框線 */
+
+	/* 強調色 */
+	--color-accent: #d2ff28; /* 萊姆綠：主 CTA／強調 */
+	--color-on-accent: #110b11; /* 萊姆綠上的深色文字 */
+	--color-amber: #d2ff28; /* 相容別名（舊元件引用 amber） */
+	--color-amber-soft: #eefcc4; /* 萊姆淺底／高亮背景 */
+	--color-teal: #2b8f88; /* 連結／資訊（冷色點綴） */
+
 	--color-success: #2e7d5b;
 	--color-warn: #b06a12;
-	--color-danger: #b23a48;
+	--color-danger: #d8434f;
 
 	/* ── 字體 ──────────────────────────────────── */
-	--font-display: 'Noto Serif TC', 'Songti TC', serif; /* 標題：宋體 */
-	--font-body: 'Inter', 'Noto Sans TC', system-ui, sans-serif; /* 內文：黑體 */
+	--font-display: 'Poppins', 'Noto Sans TC', system-ui, sans-serif; /* 標題：粗黑體 */
+	--font-body: 'Poppins', 'Noto Sans TC', system-ui, sans-serif; /* 內文 */
 	--font-mono: 'IBM Plex Mono', ui-monospace, monospace; /* 數據／標籤 */
 
-	/* 字級（CJK 內文行高刻意拉高） */
-	--text-display: 3rem; /* 48px */
-	--text-h1: 2rem; /* 32px */
-	--text-h2: 1.5rem; /* 24px */
-	--text-h3: 1.25rem; /* 20px */
+	/* 字級（web-agency 大標題；用 clamp 響應式） */
+	--text-display: clamp(2.5rem, 6vw, 4.25rem); /* 40 → 68px */
+	--text-h1: clamp(2rem, 4vw, 3rem); /* 32 → 48px */
+	--text-h2: clamp(1.5rem, 3vw, 2.25rem); /* 24 → 36px */
+	--text-h3: 1.375rem; /* 22px */
 	--text-body: 1rem; /* 16px */
 	--text-small: 0.875rem; /* 14px */
 	--text-caption: 0.75rem; /* 12px */
 
-	--leading-display: 1.25;
-	--leading-heading: 1.35;
-	--leading-body: 1.8; /* 中文可讀性 */
-	--leading-small: 1.7;
+	--leading-display: 1.15;
+	--leading-heading: 1.3;
+	--leading-body: 1.75; /* 中文可讀性 */
+	--leading-small: 1.6;
 
 	--weight-regular: 400;
 	--weight-medium: 500;
+	--weight-semibold: 600;
 	--weight-bold: 700;
 
 	/* ── 間距（4px 基準）───────────────────────── */
@@ -50,42 +57,42 @@
 	--space-8: 32px;
 	--space-12: 48px;
 	--space-16: 64px;
+	--space-24: 96px;
 
-	/* ── 圓角 ──────────────────────────────────── */
-	--radius-sm: 6px;
-	--radius-md: 12px;
-	--radius-lg: 16px;
+	/* ── 圓角（藥丸風）─────────────────────────── */
+	--radius-sm: 8px;
+	--radius-md: 16px;
+	--radius-lg: 24px;
+	--radius-pill: 50px;
 	--radius-seal: 8px;
 
-	/* ── 陰影（克制）──────────────────────────── */
-	--shadow-sm: 0 1px 2px rgba(21, 33, 58, 0.06);
-	--shadow-md: 0 4px 16px rgba(21, 33, 58, 0.08);
+	/* ── 陰影 ──────────────────────────────────── */
+	--shadow-sm: 0 1px 2px rgba(18, 20, 29, 0.06);
+	--shadow-md: 0 10px 30px rgba(18, 20, 29, 0.1);
+	--shadow-lg: 0 20px 50px rgba(18, 20, 29, 0.14);
 
 	/* ── 動效 ──────────────────────────────────── */
 	--ease: cubic-bezier(0.2, 0.8, 0.2, 1);
-	--dur: 180ms;
+	--dur: 200ms;
 
 	/* ── 版面 ──────────────────────────────────── */
-	--content-max: 1120px;
-	--focus-ring: 0 0 0 3px color-mix(in srgb, var(--color-amber) 45%, transparent);
+	--content-max: 1200px;
+	--focus-ring: 0 0 0 3px color-mix(in srgb, var(--color-accent) 55%, transparent);
 }
 
 /* ── 深色模式 ─────────────────────────────────── */
 [data-theme='dark'] {
-	--color-ink: #e8ecf5;
-	--color-ink-soft: #a9b4ca;
-	--color-surface: #0e1626;
-	--color-card: #16213a;
-	--color-border: #2a3550;
-	--color-teal: #4fb3ad;
-	--color-amber: #e8a33d;
-	--color-amber-soft: #3a2c18;
-	--color-success: #5fc79a;
-	--color-warn: #e0a857;
-	--color-danger: #e2727e;
+	--color-ink: #f2f4f8;
+	--color-ink-soft: #aeb6c4;
+	--color-surface: #0e1016;
+	--color-surface-alt: #161922;
+	--color-card: #181b24;
+	--color-border: #2a2f3c;
+	--color-teal: #4fc7bf;
 
-	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-	--shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35);
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+	--shadow-md: 0 10px 30px rgba(0, 0, 0, 0.45);
+	--shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.5);
 }
 
 /* ── 基礎套用 ─────────────────────────────────── */
@@ -95,6 +102,7 @@ body {
 	font-family: var(--font-body);
 	font-size: var(--text-body);
 	line-height: var(--leading-body);
+	-webkit-font-smoothing: antialiased;
 }
 
 h1,
@@ -103,6 +111,8 @@ h3 {
 	font-family: var(--font-display);
 	color: var(--color-ink);
 	line-height: var(--leading-heading);
+	font-weight: var(--weight-semibold);
+	letter-spacing: -0.01em;
 }
 
 a {
@@ -113,6 +123,68 @@ a {
 	outline: none;
 	box-shadow: var(--focus-ring);
 	border-radius: var(--radius-sm);
+}
+
+/* ── 共用元件原語（web-agency 風）────────────── */
+
+/* 藥丸按鈕 */
+.btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-2);
+	padding: 14px 28px;
+	border-radius: var(--radius-pill);
+	font-family: var(--font-body);
+	font-weight: var(--weight-medium);
+	font-size: var(--text-body);
+	text-decoration: none;
+	border: 1px solid transparent;
+	cursor: pointer;
+	transition: transform var(--dur) var(--ease), background var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.btn:hover { transform: translateY(-2px); }
+
+.btn-primary {
+	background: var(--color-accent);
+	color: var(--color-on-accent);
+}
+.btn-primary:hover { box-shadow: 0 8px 24px color-mix(in srgb, var(--color-accent) 50%, transparent); }
+
+.btn-ghost {
+	background: transparent;
+	color: var(--color-ink);
+	border-color: var(--color-border);
+}
+.btn-ghost:hover { border-color: var(--color-ink); }
+
+.btn-on-dark {
+	background: transparent;
+	color: #fff;
+	border-color: rgba(255, 255, 255, 0.25);
+}
+.btn-on-dark:hover { border-color: #fff; }
+
+/* eyebrow 徽章標籤 */
+.eyebrow {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-2);
+	padding: 6px 14px;
+	border-radius: var(--radius-pill);
+	border: 1px solid var(--color-border);
+	font-family: var(--font-mono);
+	font-size: var(--text-caption);
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--color-ink-soft);
+}
+.eyebrow::before {
+	content: '';
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--color-accent);
 }
 
 /* 尊重減少動態偏好 */
