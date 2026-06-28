@@ -1,5 +1,7 @@
 name = "khubs"
 type = "javascript"
+compatibility_date = "2026-06-01"
+compatibility_flags = ["nodejs_compat", "nodejs_als"]
 
 [build]
 command = "npm run build"
