@@ -2,6 +2,7 @@ name = "khubs"
 type = "javascript"
 compatibility_date = "2026-06-01"
 compatibility_flags = ["nodejs_compat", "nodejs_als"]
+pages_build_output_dir = ".svelte-kit/cloudflare"
 
 [build]
 command = "npm run build"
