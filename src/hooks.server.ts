@@ -2,6 +2,7 @@ import type { Handle } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { getDb } from '$lib/server/db/client';
 import { getSessionCookieName } from '$lib/server/auth';
+import { initializeDatabase } from '$lib/server/db/init';
 import { user as userTable, session as sessionTable } from '$lib/server/db/schema';
 
 export const handle: Handle = async ({ event, resolve }) => {
@@ -9,6 +10,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	if (env?.DB) {
 		try {
+			// Ensure database is initialized
+			await initializeDatabase(env.DB);
+
 			const token = event.cookies.get(getSessionCookieName());
 			if (token) {
 				const db = getDb(env.DB);
