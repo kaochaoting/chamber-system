@@ -1,0 +1,13 @@
+# Cloudflare Pages 專案配置
+
+name: khubs.net Chamber System
+build:
+  command: npm run build
+  output_directory: .svelte-kit/cloudflare
+
+env:
+  production:
+    - BETTER_AUTH_SECRET
+    - BETTER_AUTH_URL
+    - GOOGLE_CLIENT_ID
+    - GOOGLE_CLIENT_SECRET

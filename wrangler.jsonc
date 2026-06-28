@@ -19,28 +19,7 @@
   "workers_dev": true,
   "preview_urls": true,
 
-  // ── 綁定（建立資源後把 id 填回）──────────────────────────
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "chamber-db",
-      "database_id": "<填入 wrangler d1 create 回傳的 id>",
-      "migrations_dir": "migrations"
-    }
-  ],
-  "r2_buckets": [
-    {
-      "binding": "BUCKET",
-      "bucket_name": "chamber-assets"
-    }
-  ],
-  "kv_namespaces": [
-    {
-      "binding": "KV",
-      "id": "<填入 wrangler kv namespace create 回傳的 id>"
-    }
-  ]
-
+  // ── 本機開發：D1 自動綁定本機 SQLite；線上環境由 Pages 設定覆蓋 ──
   // 機密（BETTER_AUTH_SECRET / GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET）
-  // 本機放 .dev.vars；正式環境用：wrangler secret put <NAME>
+  // 本機放 .dev.vars；正式環境用：Cloudflare Pages 環境變數
 }
