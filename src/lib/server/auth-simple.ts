@@ -9,7 +9,8 @@ export interface SimpleUser {
 	name: string;
 	email: string;
 	passwordHash: string;
-	status: 'pending' | 'active';
+	status: 'pending' | 'active' | 'suspended';
+	role: 'member' | 'mentor' | 'assistant' | 'admin';
 	cohort?: string;
 }
 
@@ -35,9 +36,11 @@ export function registerUser(data: {
 	passwordHash: string;
 	status: 'pending' | 'active';
 	cohort?: string;
+	role?: 'member' | 'mentor' | 'assistant' | 'admin';
 }): SimpleUser {
 	const user: SimpleUser = {
 		id: uuidv4(),
+		role: data.role || 'member',
 		...data
 	};
 	users.set(user.email, user);
@@ -76,6 +79,36 @@ export function deleteSession(token: string): void {
 	sessions.delete(token);
 }
 
+export function getAllUsers(): SimpleUser[] {
+	return Array.from(users.values()).sort((a, b) => {
+		if (a.status !== b.status) {
+			const statusOrder = { pending: 0, active: 1, suspended: 2 };
+			return statusOrder[a.status] - statusOrder[b.status];
+		}
+		return a.email.localeCompare(b.email);
+	});
+}
+
+export function getPendingUsers(): SimpleUser[] {
+	return Array.from(users.values()).filter(u => u.status === 'pending');
+}
+
+export function updateUserStatus(email: string, status: 'pending' | 'active' | 'suspended'): SimpleUser | undefined {
+	const user = users.get(email);
+	if (!user) return undefined;
+	user.status = status;
+	users.set(email, user);
+	return user;
+}
+
+export function updateUserRole(email: string, role: 'member' | 'mentor' | 'assistant' | 'admin'): SimpleUser | undefined {
+	const user = users.get(email);
+	if (!user) return undefined;
+	user.role = role;
+	users.set(email, user);
+	return user;
+}
+
 // Demo data for testing
 export function initializeDemoData(): void {
 	const demoEmail = 'demo@khubs.net';
@@ -87,6 +120,7 @@ export function initializeDemoData(): void {
 				email: demoEmail,
 				passwordHash: hash,
 				status: 'active',
+				role: 'admin',
 				cohort: '115'
 			});
 		});

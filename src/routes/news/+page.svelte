@@ -1,24 +1,8 @@
 <script lang="ts">
-	const news = [
-		{
-			id: '1',
-			title: '高創坊正式上線',
-			date: '2026-06-28',
-			content: '高創坊（高雄創新創業社群商會系統）正式上線，歡迎所有創業者加入我們的社群！',
-			author: '高創坊管理員'
-		},
-		{
-			id: '2',
-			title: '邀請碼開放申請',
-			date: '2026-06-27',
-			content: '115期邀請碼已開放，使用邀請碼 KLU-115-WELCOME 可直接進入成員區域。',
-			author: '高創坊管理員'
-		}
-	];
+	let { data } = $props();
 
-	function formatDate(dateStr: string): string {
-		const date = new Date(dateStr);
-		return date.toLocaleDateString('zh-TW', {
+	function formatDate(date: Date): string {
+		return new Date(date).toLocaleDateString('zh-TW', {
 			year: 'numeric',
 			month: '2-digit',
 			day: '2-digit'
@@ -26,21 +10,36 @@
 	}
 </script>
 
-<div class="container">
-	<h1>最新消息</h1>
+<svelte:head>
+	<title>最新消息｜高創坊</title>
+</svelte:head>
 
-	<div class="news-list">
-		{#each news as article (article.id)}
-			<article class="news-item">
-				<div class="news-header">
-					<h2>{article.title}</h2>
-					<span class="date">{formatDate(article.date)}</span>
-				</div>
-				<p class="content">{article.content}</p>
-				<p class="author">作者：{article.author}</p>
-			</article>
-		{/each}
-	</div>
+<div class="container">
+	<h1>📰 最新消息</h1>
+
+	{#if data.posts.length > 0}
+		<div class="news-list">
+			{#each data.posts as post (post.id)}
+				<article class="news-item">
+					<div class="news-header">
+						<div>
+							<h2>{post.title}</h2>
+							<p class="content">{post.content.substring(0, 200)}{post.content.length > 200 ? '...' : ''}</p>
+						</div>
+						<span class="date">{formatDate(post.createdAt)}</span>
+					</div>
+					<div class="news-footer">
+						<span class="type">{post.type === 'news' ? '消息' : post.type === 'article' ? '文章' : '討論'}</span>
+						<span class="visibility">{post.visibility === 'public' ? '公開' : '會員限定'}</span>
+					</div>
+				</article>
+			{/each}
+		</div>
+	{:else}
+		<div class="empty">
+			<p>暫時沒有最新消息</p>
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -51,55 +50,92 @@
 	}
 
 	h1 {
-		text-align: center;
 		margin-bottom: 2rem;
 	}
 
 	.news-list {
 		display: flex;
 		flex-direction: column;
-		gap: 2rem;
+		gap: 1.5rem;
 	}
 
 	.news-item {
-		background: #f9f9f9;
+		background: white;
 		padding: 2rem;
 		border-radius: 8px;
-		border-left: 4px solid #007bff;
+		border: 1px solid #e5e5e5;
+		transition: all 0.2s ease;
+	}
+
+	.news-item:hover {
+		border-color: #007bff;
+		box-shadow: 0 4px 12px rgba(0, 123, 255, 0.1);
 	}
 
 	.news-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
-		gap: 1rem;
+		gap: 1.5rem;
 		margin-bottom: 1rem;
 	}
 
+	.news-header > div {
+		flex: 1;
+	}
+
 	.news-item h2 {
-		margin: 0;
+		margin: 0 0 0.75rem 0;
 		color: #333;
-		flex-grow: 1;
+		font-size: 1.3rem;
 	}
 
 	.date {
-		background: #e7f3ff;
-		color: #0056b3;
-		padding: 0.25rem 0.75rem;
+		background: #f0f0f0;
+		color: #666;
+		padding: 0.35rem 0.75rem;
 		border-radius: 4px;
-		font-size: 0.85rem;
+		font-size: 0.8rem;
 		white-space: nowrap;
 	}
 
 	.content {
 		color: #666;
 		line-height: 1.6;
-		margin: 1rem 0;
+		margin: 0;
+		font-size: 0.95rem;
 	}
 
-	.author {
-		font-size: 0.85rem;
+	.news-footer {
+		display: flex;
+		gap: 0.75rem;
+		margin-top: 1rem;
+		padding-top: 1rem;
+		border-top: 1px solid #e5e5e5;
+	}
+
+	.type,
+	.visibility {
+		display: inline-block;
+		padding: 0.25rem 0.75rem;
+		border-radius: 12px;
+		font-size: 0.75rem;
+		font-weight: 500;
+	}
+
+	.type {
+		background: #e7f3ff;
+		color: #0056b3;
+	}
+
+	.visibility {
+		background: #f0f0f0;
+		color: #666;
+	}
+
+	.empty {
+		text-align: center;
+		padding: 4rem 2rem;
 		color: #999;
-		margin: 0;
 	}
 </style>

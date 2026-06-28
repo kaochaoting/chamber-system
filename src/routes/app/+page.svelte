@@ -17,11 +17,21 @@
 <div class="container">
 	<h1>高創坊 - 成員區域</h1>
 	<p>歡迎，{data.user?.name}！</p>
-	<p>信箱：{data.user?.email}</p>
-	<p>身份：{data.user?.role}</p>
-	<p>期別：{data.user?.cohort}</p>
 
-	<button on:click={handleLogout}>登出</button>
+	<div class="menu">
+		<a href="/app/profile" class="menu-item">⚙️ 編輯個人資料</a>
+		{#if data.user?.role === 'admin' || data.user?.role === 'assistant'}
+			<a href="/admin" class="menu-item admin">🔐 後台管理</a>
+		{/if}
+	</div>
+
+	<div class="info">
+		<p><strong>信箱：</strong> {data.user?.email}</p>
+		<p><strong>身份：</strong> {data.user?.role}</p>
+		<p><strong>期別：</strong> {data.user?.cohort || '未設定'}</p>
+	</div>
+
+	<button on:click={handleLogout} class="btn-logout">登出</button>
 </div>
 
 <style>
