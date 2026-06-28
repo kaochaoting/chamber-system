@@ -10,7 +10,7 @@
 	<h1>登入</h1>
 	{#if form?.message}<p class="error" role="alert">{form.message}</p>{/if}
 
-	<form method="POST" use:enhance>
+	<form method="POST" action="?/email" use:enhance>
 		<label>信箱<input type="email" name="email" value={form?.email ?? ''} required /></label>
 		<label>密碼<input type="password" name="password" required /></label>
 		<Button type="submit">登入</Button>
