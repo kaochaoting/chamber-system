@@ -1,7 +1,5 @@
 name = "khubs"
 type = "javascript"
-compatibility_date = "2026-06-01"
-compatibility_flags = ["nodejs_compat", "nodejs_als"]
 pages_build_output_dir = ".svelte-kit/cloudflare"
 
 [build]
@@ -10,6 +8,10 @@ cwd = "./"
 
 [build.upload]
 format = "service-worker"
+
+[functions]
+compatibility_date = "2026-06-01"
+compatibility_flags = ["nodejs_compat", "nodejs_als"]
 
 [env.production]
 # 高創坊 - khubs.net 部署配置
