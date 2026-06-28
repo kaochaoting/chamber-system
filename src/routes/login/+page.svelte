@@ -39,7 +39,7 @@
 
 <div class="container">
 	<h1>登入</h1>
-	<p>商會系統成員登入</p>
+	<p>高創坊成員登入</p>
 
 	<div class="form-section">
 		{#if error}

@@ -38,7 +38,7 @@
 
 <div class="container">
 	<h1>高創坊</h1>
-	<p>高雄創新創業社群商會系統</p>
+	<p>高雄創新創業社群</p>
 
 	<div class="form-section">
 		<h2>會員註冊</h2>

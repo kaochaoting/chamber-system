@@ -15,7 +15,7 @@
 </script>
 
 <div class="container">
-	<h1>商會系統 - 成員區域</h1>
+	<h1>高創坊 - 成員區域</h1>
 	<p>歡迎，{data.user?.name}！</p>
 	<p>信箱：{data.user?.email}</p>
 	<p>身份：{data.user?.role}</p>

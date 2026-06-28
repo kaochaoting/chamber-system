@@ -4,7 +4,7 @@
 </script>
 
 <header class="nav">
-	<a href="/" class="brand">商會系統</a>
+	<a href="/" class="brand">高創坊</a>
 	<nav>
 		<a href="/members">會員名錄</a>
 		<a href="/directory">產品服務</a>
