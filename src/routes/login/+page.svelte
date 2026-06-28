@@ -26,7 +26,10 @@
 				body: JSON.stringify({ email, password })
 			});
 
-			if (!response.ok) {
+			if (response.ok) {
+				// Login successful, reload page to update session
+				window.location.href = '/';
+			} else {
 				error = '登入失敗，請檢查信箱與密碼。';
 			}
 		} catch (err) {
