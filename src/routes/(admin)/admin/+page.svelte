@@ -26,12 +26,6 @@
 			<p>發佈消息、管理文章、上下架</p>
 			<span class="go">進入 →</span>
 		</a>
-		<a href="/admin/invites" class="menu-item">
-			<div class="ic">🔑</div>
-			<h2>邀請碼管理</h2>
-			<p>產生新邀請碼、管理期別</p>
-			<span class="go">進入 →</span>
-		</a>
 	</div>
 </div>
 

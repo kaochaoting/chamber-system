@@ -13,6 +13,11 @@
 		active: '已啟用',
 		suspended: '已停權'
 	};
+	const categoryLabels: Record<string, string> = {
+		organizer: '主辦單位',
+		student: '學員',
+		member: '會員'
+	};
 </script>
 
 <svelte:head><title>會員管理｜後台</title></svelte:head>
@@ -61,13 +66,23 @@
 		{:else}
 			<table>
 				<thead>
-					<tr><th>姓名</th><th>信箱</th><th>角色</th><th>狀態</th><th>期別</th><th>操作</th></tr>
+					<tr><th>姓名</th><th>信箱</th><th>分類</th><th>角色</th><th>狀態</th><th>期別</th><th>操作</th></tr>
 				</thead>
 				<tbody>
 					{#each data.members as u (u.id)}
 						<tr>
 							<td>{u.name}</td>
 							<td>{u.email}</td>
+							<td>
+								<form method="POST" action="?/setCategory" use:enhance class="inline">
+									<input type="hidden" name="id" value={u.id} />
+									<select name="category" onchange={(e) => e.currentTarget.form?.requestSubmit()}>
+										{#each Object.entries(categoryLabels) as [val, label]}
+											<option value={val} selected={u.category === val}>{label}</option>
+										{/each}
+									</select>
+								</form>
+							</td>
 							<td>
 								<form method="POST" action="?/setRole" use:enhance class="inline">
 									<input type="hidden" name="id" value={u.id} />

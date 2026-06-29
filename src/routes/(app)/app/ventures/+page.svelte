@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import ImageUpload from '$lib/components/ImageUpload.svelte';
+	import GalleryUpload from '$lib/components/GalleryUpload.svelte';
 	let { data, form } = $props();
 	const v = data.venture;
 
 	let logoKey = $state(v?.logoKey ?? '');
+	let galleryKeys = $state<string[]>((v?.galleryKeys as string[]) ?? []);
 	let newImageKey = $state('');
 	let newKind = $state('product');
 </script>
@@ -37,6 +39,7 @@
 			<label>一句話標語<input name="tagline" value={v?.tagline ?? ''} placeholder="例：高雄在地法式甜點" /></label>
 			<label>品牌介紹<textarea name="description" rows="3">{v?.description ?? ''}</textarea></label>
 			<label>官網連結<input name="websiteUrl" value={v?.websiteUrl ?? ''} placeholder="https://..." /></label>
+			<GalleryUpload name="galleryKeys" bind:value={galleryKeys} min={5} />
 			<label class="check"><input type="checkbox" name="isPublic" checked={v ? v.isPublic : true} />在「產品與服務」對外公開</label>
 			<button type="submit" class="btn btn-primary">{v ? '更新品牌' : '建立品牌'}</button>
 		</form>

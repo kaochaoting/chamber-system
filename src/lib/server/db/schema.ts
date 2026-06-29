@@ -17,7 +17,9 @@ export const user = sqliteTable('user', {
 	// ── 自訂欄位（additionalFields）──
 	role: text('role').notNull().default('member'), // member | mentor | assistant | admin
 	status: text('status').notNull().default('pending'), // pending | active | suspended
+	category: text('category').notNull().default('member'), // organizer 主辦單位 | student 學員 | member 會員
 	cohort: text('cohort'), // 期別，例 "115"
+	referredBy: text('referred_by'), // 邀請人 user.id（透過邀請連結加入）
 	createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 	updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull()
 });
@@ -104,6 +106,7 @@ export const ventures = sqliteTable('ventures', {
 	logoKey: text('logo_key'),
 	industryId: integer('industry_id').references(() => industries.id),
 	websiteUrl: text('website_url'), // 對外導出回鏈
+	galleryKeys: text('gallery_keys', { mode: 'json' }).$type<string[]>(), // 品牌膠卷照片（建議 ≥5）
 	status: text('status').notNull().default('active'),
 	isPublic: integer('is_public', { mode: 'boolean' }).notNull().default(true)
 });

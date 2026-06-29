@@ -44,7 +44,9 @@ export const load: PageServerLoad = async ({ params, platform, url }) => {
 			.where(and(eq(products.ventureId, venture.id), eq(products.isPublic, true)));
 		services = items.filter((i) => i.kind === 'service');
 		goods = items.filter((i) => i.kind !== 'service');
-		gallery = items.flatMap((i) => (i.imageKeys as string[] | null) ?? []);
+		// 膠卷優先用品牌膠卷照片，沒有才退回各產品圖
+		const vg = (venture.galleryKeys as string[] | null) ?? [];
+		gallery = vg.length ? vg : items.flatMap((i) => (i.imageKeys as string[] | null) ?? []);
 	}
 
 	const pageUrl = url.origin + url.pathname;

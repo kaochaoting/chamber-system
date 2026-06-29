@@ -14,6 +14,7 @@ export const load: PageServerLoad = async ({ platform }) => {
 			email: userTable.email,
 			role: userTable.role,
 			status: userTable.status,
+			category: userTable.category,
 			cohort: userTable.cohort
 		})
 		.from(userTable);
@@ -68,6 +69,19 @@ export const actions: Actions = {
 
 		await db.update(userTable).set({ role: role as any }).where(eq(userTable.id, id));
 		await logAudit(db, (locals.user as any).id, AUDIT.ROLE_CHANGED, `${id}:${role}`);
+		return { success: true };
+	},
+
+	setCategory: async ({ request, locals, platform }) => {
+		const db = getDb((platform!.env as any).DB);
+		const form = await request.formData();
+		const id = String(form.get('id') ?? '');
+		const category = String(form.get('category') ?? '');
+		const allowed = ['organizer', 'student', 'member'];
+		if (!id || !allowed.includes(category)) return fail(400, { message: '參數錯誤。' });
+
+		await db.update(userTable).set({ category: category as any }).where(eq(userTable.id, id));
+		await logAudit(db, (locals.user as any).id, AUDIT.ROLE_CHANGED, `${id}:cat:${category}`);
 		return { success: true };
 	}
 };

@@ -34,12 +34,22 @@ export const actions: Actions = {
 		const name = String(f.get('name') ?? '').trim();
 		if (!name) return fail(400, { message: '請填寫創業／品牌名稱。' });
 
+		let galleryKeys: string[] = [];
+		try {
+			const raw = String(f.get('galleryKeys') ?? '[]');
+			const parsed = JSON.parse(raw);
+			if (Array.isArray(parsed)) galleryKeys = parsed.filter((k) => typeof k === 'string');
+		} catch {
+			galleryKeys = [];
+		}
+
 		const values = {
 			name,
 			tagline: String(f.get('tagline') ?? '').trim() || null,
 			description: String(f.get('description') ?? '').trim() || null,
 			websiteUrl: String(f.get('websiteUrl') ?? '').trim() || null,
 			logoKey: String(f.get('logoKey') ?? '').trim() || null,
+			galleryKeys: galleryKeys.length ? galleryKeys : null,
 			isPublic: f.get('isPublic') === 'on'
 		};
 
