@@ -23,6 +23,11 @@
 			<label>一句話簡介<textarea name="bio" rows="3">{p?.bio ?? ''}</textarea></label>
 			<label>公開信箱<input type="email" name="publicEmail" value={p?.publicContact?.email ?? ''} /></label>
 			<label>官網／通路（會成為對外反向鏈結）<input name="website" value={p?.socials?.website ?? ''} /></label>
+			<div class="socials">
+				<label>LINE<input name="line" value={p?.socials?.line ?? ''} placeholder="LINE 連結或 ID" /></label>
+				<label>Facebook<input name="facebook" value={p?.socials?.facebook ?? ''} placeholder="https://facebook.com/…" /></label>
+				<label>Instagram<input name="instagram" value={p?.socials?.instagram ?? ''} placeholder="https://instagram.com/…" /></label>
+			</div>
 			<label class="check"><input type="checkbox" name="isPublic" checked={p?.isPublic ?? false} />在對外名錄公開我的檔案</label>
 		</fieldset>
 

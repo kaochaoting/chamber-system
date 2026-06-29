@@ -106,6 +106,7 @@ export const ventures = sqliteTable('ventures', {
 	logoKey: text('logo_key'),
 	industryId: integer('industry_id').references(() => industries.id),
 	websiteUrl: text('website_url'), // 對外導出回鏈
+	socials: text('socials', { mode: 'json' }).$type<Record<string, string>>(), // line/facebook/instagram
 	galleryKeys: text('gallery_keys', { mode: 'json' }).$type<string[]>(), // 品牌膠卷照片（建議 ≥5）
 	status: text('status').notNull().default('active'),
 	isPublic: integer('is_public', { mode: 'boolean' }).notNull().default(true)

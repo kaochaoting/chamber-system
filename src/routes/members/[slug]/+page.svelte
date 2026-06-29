@@ -6,6 +6,18 @@
 	const initial = (profile.displayName ?? '會').trim()[0];
 	const img = (key: string | null | undefined) => (key ? `/img/${encodeURIComponent(key)}` : null);
 
+	// 彙整社群連結（品牌優先，其次個人檔案）；自動補 https
+	const s = { ...(profile.socials ?? {}), ...(venture?.socials ?? {}) } as Record<string, string>;
+	function href(v: string) {
+		return /^https?:\/\//.test(v) ? v : `https://${v}`;
+	}
+	const socialLinks = [
+		{ label: '官網', val: s.website },
+		{ label: 'LINE', val: s.line },
+		{ label: 'Facebook', val: s.facebook },
+		{ label: 'Instagram', val: s.instagram }
+	].filter((x) => x.val && x.val.trim());
+
 	// 膠卷場景：有真實圖用圖；無圖則用暮光佔位場景（讓輪播仍可展示）
 	const reel: (string | null)[] = gallery.length ? gallery : [null, null, null, null];
 
@@ -147,6 +159,13 @@
 		{#if profile.publicContact?.email}<a class="btn btn-primary" href={`mailto:${profile.publicContact.email}`}>聯絡 {profile.displayName}</a>{/if}
 		{#if venture?.websiteUrl}<a class="btn btn-on-dark" href={venture.websiteUrl} target="_blank" rel="noopener">前往官網 →</a>{/if}
 	</div>
+	{#if socialLinks.length}
+		<div class="socials">
+			{#each socialLinks as l}
+				<a href={href(l.val)} target="_blank" rel="noopener">{l.label}</a>
+			{/each}
+		</div>
+	{/if}
 </section>
 
 <style>
@@ -282,6 +301,9 @@
 	.curtain:global(.in) { opacity: 1; }
 	.curtain h2 { color: #fff; font-size: var(--text-h2); font-weight: 700; }
 	.cta-row { display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap; margin-top: var(--space-8); }
+	.curtain .socials { display: flex; gap: var(--space-5); justify-content: center; flex-wrap: wrap; margin-top: var(--space-6); }
+	.curtain .socials a { color: rgba(255,255,255,0.75); text-decoration: none; font-size: var(--text-small); border-bottom: 1px solid transparent; }
+	.curtain .socials a:hover { color: var(--color-accent); border-bottom-color: var(--color-accent); }
 
 	/* RWD */
 	@media (max-width: 760px) {

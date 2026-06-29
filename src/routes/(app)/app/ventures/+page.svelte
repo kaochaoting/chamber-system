@@ -39,6 +39,11 @@
 			<label>一句話標語<input name="tagline" value={v?.tagline ?? ''} placeholder="例：高雄在地法式甜點" /></label>
 			<label>品牌介紹<textarea name="description" rows="3">{v?.description ?? ''}</textarea></label>
 			<label>官網連結<input name="websiteUrl" value={v?.websiteUrl ?? ''} placeholder="https://..." /></label>
+			<div class="socials">
+				<label>LINE<input name="line" value={v?.socials?.line ?? ''} placeholder="LINE 連結或 ID" /></label>
+				<label>Facebook<input name="facebook" value={v?.socials?.facebook ?? ''} placeholder="https://facebook.com/…" /></label>
+				<label>Instagram<input name="instagram" value={v?.socials?.instagram ?? ''} placeholder="https://instagram.com/…" /></label>
+			</div>
 			<GalleryUpload name="galleryKeys" bind:value={galleryKeys} min={5} />
 			<label class="check"><input type="checkbox" name="isPublic" checked={v ? v.isPublic : true} />在「產品與服務」對外公開</label>
 			<button type="submit" class="btn btn-primary">{v ? '更新品牌' : '建立品牌'}</button>

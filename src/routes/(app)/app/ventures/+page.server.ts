@@ -43,12 +43,20 @@ export const actions: Actions = {
 			galleryKeys = [];
 		}
 
+		const socials = {
+			line: String(f.get('line') ?? '').trim(),
+			facebook: String(f.get('facebook') ?? '').trim(),
+			instagram: String(f.get('instagram') ?? '').trim()
+		};
+		const hasSocial = socials.line || socials.facebook || socials.instagram;
+
 		const values = {
 			name,
 			tagline: String(f.get('tagline') ?? '').trim() || null,
 			description: String(f.get('description') ?? '').trim() || null,
 			websiteUrl: String(f.get('websiteUrl') ?? '').trim() || null,
 			logoKey: String(f.get('logoKey') ?? '').trim() || null,
+			socials: hasSocial ? socials : null,
 			galleryKeys: galleryKeys.length ? galleryKeys : null,
 			isPublic: f.get('isPublic') === 'on'
 		};

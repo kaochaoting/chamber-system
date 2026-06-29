@@ -76,7 +76,8 @@ export const load: PageServerLoad = async ({ params, platform, url }) => {
 					tagline: venture.tagline,
 					description: venture.description,
 					websiteUrl: venture.websiteUrl,
-					logoKey: venture.logoKey
+					logoKey: venture.logoKey,
+					socials: venture.socials
 				}
 			: null,
 		services,

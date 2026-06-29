@@ -38,7 +38,12 @@ export const actions: Actions = {
 		const isPublic = form.get('isPublic') === 'on';
 		const publicContact = { email: String(form.get('publicEmail') ?? '').trim() };
 		const privateContact = { phone: String(form.get('privatePhone') ?? '').trim() };
-		const socials = { website: String(form.get('website') ?? '').trim() };
+		const socials = {
+			website: String(form.get('website') ?? '').trim(),
+			line: String(form.get('line') ?? '').trim(),
+			facebook: String(form.get('facebook') ?? '').trim(),
+			instagram: String(form.get('instagram') ?? '').trim()
+		};
 
 		const existing = await db.select().from(profiles).where(eq(profiles.userId, userId)).limit(1);
 		const slug = existing[0]?.slug ?? `${slugify(displayName)}-${userId.slice(0, 6)}`;
