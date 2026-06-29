@@ -38,6 +38,11 @@ export function createAuth(env: AuthEnv, baseURL?: string) {
 		database: drizzleAdapter(db, { provider: 'sqlite', schema }),
 		emailAndPassword: { enabled: false }, // 統一 Google 登入，關閉密碼登入
 		socialProviders: social,
+		// 同 email 自動連結 Google（Google email 已驗證，安全）；
+		// 讓預先建立的管理員資料列在首次 Google 登入時被連結沿用
+		account: {
+			accountLinking: { enabled: true, trustedProviders: ['google'] }
+		},
 		user: {
 			additionalFields: {
 				role: { type: 'string', defaultValue: 'member', input: false },
