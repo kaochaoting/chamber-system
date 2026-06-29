@@ -73,7 +73,9 @@
 		color: var(--color-ink);
 		text-decoration: none;
 		letter-spacing: -0.02em;
+		white-space: nowrap;
 	}
+	.logo { flex: none; }
 	.logo {
 		display: grid;
 		place-items: center;
@@ -91,7 +93,15 @@
 	.nav-cta { display: flex; gap: var(--space-4); align-items: center; }
 	.login { color: var(--color-ink-soft); text-decoration: none; font-size: var(--text-small); font-weight: var(--weight-medium); }
 	.login:hover { color: var(--color-ink); }
-	.btn-sm { padding: 9px 18px; font-size: var(--text-small); }
+	.btn-sm { padding: 9px 18px; font-size: var(--text-small); white-space: nowrap; }
+
+	/* 手機：品牌+CTA 一排，連結折到第二排置中 */
+	@media (max-width: 640px) {
+		.nav-inner { flex-wrap: wrap; gap: var(--space-3); }
+		.brand { font-size: var(--text-body); }
+		.links { order: 3; width: 100%; justify-content: center; gap: var(--space-4); padding-top: var(--space-2); border-top: 1px solid var(--color-border); }
+		.nav-cta { gap: var(--space-3); }
+	}
 
 	main { max-width: var(--content-max); margin: 0 auto; padding: 0 var(--space-4); min-height: 60vh; }
 
