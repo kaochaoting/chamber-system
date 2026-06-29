@@ -34,6 +34,7 @@ export const actions: Actions = {
 		if (!displayName) return fail(400, { message: '請填寫顯示名稱。' });
 
 		const bio = String(form.get('bio') ?? '').trim() || null;
+		const avatarKey = String(form.get('avatarKey') ?? '').trim() || null;
 		const isPublic = form.get('isPublic') === 'on';
 		const publicContact = { email: String(form.get('publicEmail') ?? '').trim() };
 		const privateContact = { phone: String(form.get('privatePhone') ?? '').trim() };
@@ -48,6 +49,7 @@ export const actions: Actions = {
 			slug,
 			displayName,
 			bio,
+			avatarKey,
 			isPublic,
 			publicContact,
 			privateContact,

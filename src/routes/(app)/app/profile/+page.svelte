@@ -1,20 +1,24 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import Button from '$lib/components/Button.svelte';
+	import ImageUpload from '$lib/components/ImageUpload.svelte';
 	let { data, form } = $props();
 	const p = data.profile;
+	let avatarKey = $state(p?.avatarKey ?? '');
 </script>
 
 <svelte:head><title>個人資料｜高創坊</title></svelte:head>
 
 <section class="profile">
 	<h1>個人資料</h1>
-	{#if form?.success}<p class="ok" role="status">已儲存。</p>{/if}
+	<p class="lead">這裡編輯的內容會顯示在你的<strong>公開品牌頁</strong>。建議上傳直式頭像（建議 800×1000，比例 4:5）。</p>
+	{#if form?.success}<p class="ok" role="status">已儲存。<a href="/members/{data.profile?.slug}" target="_blank">查看品牌頁 →</a></p>{/if}
 	{#if form?.message}<p class="error" role="alert">{form.message}</p>{/if}
 
 	<form method="POST" use:enhance>
 		<fieldset>
 			<legend>公開資訊</legend>
+			<ImageUpload name="avatarKey" bind:value={avatarKey} label="頭像／品牌頁主體" ratio="4/5" hint="建議 800×1000（4:5），≤5MB" />
 			<label>顯示名稱<input name="displayName" value={p?.displayName ?? ''} required /></label>
 			<label>一句話簡介<textarea name="bio" rows="3">{p?.bio ?? ''}</textarea></label>
 			<label>公開信箱<input type="email" name="publicEmail" value={p?.publicContact?.email ?? ''} /></label>
@@ -33,6 +37,8 @@
 
 <style>
 	.profile { max-width: 560px; padding: var(--space-12) 0; }
+	.lead { color: var(--color-ink-soft); font-size: var(--text-small); margin-top: var(--space-2); }
+	.ok a { color: var(--color-teal); margin-left: var(--space-2); }
 	form { display: flex; flex-direction: column; gap: var(--space-6); margin-top: var(--space-6); }
 	fieldset { border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-3); }
 	legend { padding: 0 var(--space-2); color: var(--color-ink-soft); font-size: var(--text-small); }

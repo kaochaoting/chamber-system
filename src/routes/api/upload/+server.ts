@@ -19,11 +19,12 @@ export const POST: RequestHandler = async ({ request, locals, platform }) => {
 	if (file.size > MAX_SIZE) throw error(400, '檔案不可超過 5MB。');
 
 	const ext = file.type.split('/')[1];
-	const key = `${user.id}/${Date.now()}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
+	// 扁平金鑰（不含斜線），確保 /img/[key] 路由正確
+	const key = `${user.id}-${Date.now()}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
 
 	await bucket.put(key, await file.arrayBuffer(), {
 		httpMetadata: { contentType: file.type }
 	});
 
-	return json({ key, url: `/img/${encodeURIComponent(key)}` });
+	return json({ key, url: `/img/${key}` });
 };
