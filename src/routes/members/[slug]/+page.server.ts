@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, inArray } from 'drizzle-orm';
 import { getDb } from '$lib/server/db/client';
-import { profiles, ventures } from '$lib/server/db/schema';
+import { profiles, ventures, products } from '$lib/server/db/schema';
 import { memberJsonLd, jsonLdScript } from '$lib/server/seo';
 import type { PageServerLoad } from './$types';
 
@@ -25,6 +25,28 @@ export const load: PageServerLoad = async ({ params, platform, url }) => {
 			.limit(1)
 	)[0];
 
+	// 產品/服務（依 kind 分流）；僅公開
+	let services: any[] = [];
+	let goods: any[] = [];
+	let gallery: string[] = [];
+	if (venture) {
+		const items = await db
+			.select({
+				id: products.id,
+				kind: products.kind,
+				name: products.name,
+				description: products.description,
+				priceLabel: products.priceLabel,
+				imageKeys: products.imageKeys,
+				externalUrl: products.externalUrl
+			})
+			.from(products)
+			.where(and(eq(products.ventureId, venture.id), eq(products.isPublic, true)));
+		services = items.filter((i) => i.kind === 'service');
+		goods = items.filter((i) => i.kind !== 'service');
+		gallery = items.flatMap((i) => (i.imageKeys as string[] | null) ?? []);
+	}
+
 	const pageUrl = url.origin + url.pathname;
 	const jsonLd = jsonLdScript(
 		memberJsonLd({
@@ -38,17 +60,26 @@ export const load: PageServerLoad = async ({ params, platform, url }) => {
 		})
 	);
 
-	// 僅回傳公開欄位，私密聯絡方式不外洩
 	return {
 		profile: {
 			displayName: prof.displayName,
 			bio: prof.bio,
+			avatarKey: prof.avatarKey,
 			publicContact: prof.publicContact,
 			socials: prof.socials
 		},
 		venture: venture
-			? { name: venture.name, tagline: venture.tagline, description: venture.description, websiteUrl: venture.websiteUrl }
+			? {
+					name: venture.name,
+					tagline: venture.tagline,
+					description: venture.description,
+					websiteUrl: venture.websiteUrl,
+					logoKey: venture.logoKey
+				}
 			: null,
+		services,
+		goods,
+		gallery,
 		jsonLd
 	};
 };
