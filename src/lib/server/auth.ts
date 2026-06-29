@@ -23,7 +23,7 @@ export type AuthEnv = {
  *  - sveltekitCookies 必須是 plugins 陣列的「最後一個」
  *  - 新帳號 status 預設 'pending'（Google 新帳號一律待後台審核）
  */
-export function createAuth(env: AuthEnv) {
+export function createAuth(env: AuthEnv, baseURL?: string) {
 	const db = getDb(env.DB);
 
 	const social =
@@ -32,7 +32,8 @@ export function createAuth(env: AuthEnv) {
 			: undefined;
 
 	return betterAuth({
-		baseURL: env.BETTER_AUTH_URL,
+		// 優先用請求 origin（直接部署時 plain_text env 可能未注入），其次才用環境變數
+		baseURL: baseURL ?? env.BETTER_AUTH_URL,
 		secret: env.BETTER_AUTH_SECRET,
 		database: drizzleAdapter(db, { provider: 'sqlite', schema }),
 		emailAndPassword: { enabled: false }, // 統一 Google 登入，關閉密碼登入

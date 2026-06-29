@@ -4,9 +4,9 @@ import type { Actions } from './$types';
 
 export const actions: Actions = {
 	// 統一 Google：申請加入＝用 Google 登入，新帳號預設 pending 待後台審核
-	default: async ({ platform }) => {
+	default: async ({ platform, url }) => {
 		const env = platform!.env as any;
-		const auth = createAuth(env);
+		const auth = createAuth(env, url.origin);
 		const res: any = await auth.api.signInSocial({
 			body: { provider: 'google', callbackURL: '/app' }
 		});

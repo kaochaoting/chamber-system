@@ -6,7 +6,7 @@ export const actions: Actions = {
 	// 統一 Google 登入：取得授權 URL 後導向
 	default: async ({ platform, url }) => {
 		const env = platform!.env as any;
-		const auth = createAuth(env);
+		const auth = createAuth(env, url.origin);
 		const callbackURL = url.searchParams.get('redirect') ?? '/app';
 		const res: any = await auth.api.signInSocial({
 			body: { provider: 'google', callbackURL }

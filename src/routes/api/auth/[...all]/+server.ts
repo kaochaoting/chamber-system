@@ -1,8 +1,8 @@
 import { createAuth } from '$lib/server/auth';
 import type { RequestHandler } from './$types';
 
-const handler: RequestHandler = ({ request, platform }) => {
-	const auth = createAuth(platform!.env as any);
+const handler: RequestHandler = ({ request, platform, url }) => {
+	const auth = createAuth(platform!.env as any, url.origin);
 	return auth.handler(request);
 };
 
