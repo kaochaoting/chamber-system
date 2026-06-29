@@ -4,7 +4,7 @@
 	let { form } = $props();
 </script>
 
-<svelte:head><title>登入｜商會系統</title></svelte:head>
+<svelte:head><title>登入｜高創坊</title></svelte:head>
 
 <section class="auth">
 	<h1>登入</h1>

@@ -5,7 +5,7 @@
 	const p = data.profile;
 </script>
 
-<svelte:head><title>個人資料｜商會系統</title></svelte:head>
+<svelte:head><title>個人資料｜高創坊</title></svelte:head>
 
 <section class="profile">
 	<h1>個人資料</h1>

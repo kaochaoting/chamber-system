@@ -1,4 +1,4 @@
-<svelte:head><title>申請審核中｜商會系統</title></svelte:head>
+<svelte:head><title>申請審核中｜高創坊</title></svelte:head>
 
 <section class="pending">
 	<div class="seal">審</div>
@@ -15,9 +15,9 @@
 	.seal {
 		width: 56px; height: 56px; margin: 0 auto var(--space-4);
 		display: grid; place-items: center;
-		border: 2px solid var(--color-amber); border-radius: var(--radius-seal);
-		background: var(--color-amber-soft); color: var(--color-amber);
-		font-family: var(--font-display); font-size: 1.5rem;
+		border-radius: var(--radius-md);
+		background: var(--color-ink); color: var(--color-accent);
+		font-family: var(--font-display); font-weight: var(--weight-bold); font-size: 1.5rem;
 	}
 	.hint { color: var(--color-ink-soft); font-size: var(--text-small); }
 	button {

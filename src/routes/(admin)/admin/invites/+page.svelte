@@ -75,7 +75,7 @@
 	th { color: var(--color-ink-soft); font-weight: var(--weight-medium); }
 	code { font-family: var(--font-mono); background: var(--color-surface); padding: 2px 6px; border-radius: var(--radius-sm); }
 	.btn { padding: var(--space-2) var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-card); cursor: pointer; }
-	.btn.primary { background: var(--color-amber); color: #fff; border-color: var(--color-amber); }
+	.btn.primary { background: var(--color-accent); color: var(--color-on-accent); border-color: var(--color-accent); }
 	.badge { padding: 2px 8px; border-radius: var(--radius-sm); font-size: var(--text-caption); }
 	.badge.open { background: #e3f5ec; color: var(--color-success); }
 	.badge.used { background: var(--color-surface); color: var(--color-ink-soft); }

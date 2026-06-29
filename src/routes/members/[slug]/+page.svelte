@@ -5,7 +5,7 @@
 </script>
 
 <svelte:head>
-	<title>{profile.displayName}｜商會系統</title>
+	<title>{profile.displayName}｜高創坊</title>
 	{#if profile.bio}<meta name="description" content={profile.bio} />{/if}
 	{@html `<script type="application/ld+json">${data.jsonLd}<\/script>`}
 </svelte:head>
@@ -43,6 +43,7 @@
 	.venture { margin-top: var(--space-8); padding: var(--space-6); background: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius-md); }
 	.venture h2 { font-size: var(--text-h2); }
 	.tagline { color: var(--color-teal); margin: var(--space-1) 0 var(--space-3); }
-	.site { display: inline-block; margin-top: var(--space-4); color: var(--color-amber); font-weight: var(--weight-medium); text-decoration: none; }
+	.site { display: inline-flex; align-items: center; gap: var(--space-2); margin-top: var(--space-4); padding: 10px 20px; border-radius: var(--radius-pill); background: var(--color-accent); color: var(--color-on-accent); font-weight: var(--weight-medium); text-decoration: none; }
+	.site:hover { box-shadow: 0 8px 24px color-mix(in srgb, var(--color-accent) 50%, transparent); }
 	.contact { margin-top: var(--space-6); color: var(--color-ink-soft); font-size: var(--text-small); }
 </style>

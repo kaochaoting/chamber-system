@@ -2,7 +2,7 @@
 	let { data } = $props();
 </script>
 
-<svelte:head><title>會員中心｜商會系統</title></svelte:head>
+<svelte:head><title>會員中心｜高創坊</title></svelte:head>
 
 <section class="dash">
 	<h1>會員中心</h1>

@@ -1,175 +1,74 @@
 <script lang="ts">
-	let selectedCategory = 'all';
-
-	const products = [
-		{
-			id: '1',
-			name: '創新創業諮詢',
-			category: 'consulting',
-			description: '提供創業初期的策略規劃和市場分析',
-			provider: 'Demo User'
-		},
-		{
-			id: '2',
-			name: '品牌設計服務',
-			category: 'design',
-			description: '協助新創企業打造專業的品牌形象',
-			provider: 'Demo User'
-		}
-	];
-
-	const categories = [
-		{ id: 'all', name: '全部' },
-		{ id: 'consulting', name: '諮詢服務' },
-		{ id: 'design', name: '設計' },
-		{ id: 'marketing', name: '行銷' },
-		{ id: 'tech', name: '技術' }
-	];
-
-	$: filtered = selectedCategory === 'all'
-		? products
-		: products.filter(p => p.category === selectedCategory);
+	let { data } = $props();
 </script>
 
-<div class="container">
-	<h1>產品與服務</h1>
-	<p class="subtitle">高創坊成員提供的產品與服務</p>
+<svelte:head>
+	<title>產品與服務｜高創坊</title>
+	<meta name="description" content="高創坊成員提供的產品與服務型錄。" />
+</svelte:head>
 
-	<div class="filter-section">
-		{#each categories as cat (cat.id)}
-			<button
-				class="filter-btn {selectedCategory === cat.id ? 'active' : ''}"
-				on:click={() => (selectedCategory = cat.id)}
-			>
-				{cat.name}
-			</button>
-		{/each}
-	</div>
+<section class="page">
+	<header class="page-head">
+		<span class="eyebrow">對外開放索引</span>
+		<h1>產品與服務</h1>
+		<p>高創坊成員的創業、產品與服務，讓客戶找得到、選得到。</p>
+	</header>
 
-	<div class="products-grid">
-		{#each filtered as product (product.id)}
-			<div class="product-card">
-				<h3>{product.name}</h3>
-				<p class="category">{categories.find(c => c.id === product.category)?.name}</p>
-				<p class="description">{product.description}</p>
-				<p class="provider">提供者：{product.provider}</p>
-				<button class="contact-btn">聯繫提供者</button>
-			</div>
-		{:else}
-			<p class="empty">此類別暫無服務</p>
-		{/each}
-	</div>
-</div>
+	{#if data.ventures.length === 0}
+		<div class="empty">
+			<div class="empty-ic">🚀</div>
+			<h2>型錄即將上線</h2>
+			<p>成員的創業檔案陸續建立中。先看看 <a href="/members">會員名錄</a>，認識社群裡的創業者。</p>
+			<a class="btn btn-primary" href="/members">瀏覽會員名錄</a>
+		</div>
+	{:else}
+		<div class="grid">
+			{#each data.ventures as v (v.id)}
+				<article class="card">
+					<h3>{v.name}</h3>
+					{#if v.tagline}<p class="tagline">{v.tagline}</p>{/if}
+					{#if v.description}<p class="desc">{v.description}</p>{/if}
+					<div class="meta">
+						{#if v.ownerSlug}<a class="owner" href="/members/{v.ownerSlug}">{v.ownerName}</a>{/if}
+						{#if v.websiteUrl}
+							<a class="site" href={v.websiteUrl} target="_blank" rel="noopener">官網 →</a>
+						{/if}
+					</div>
+				</article>
+			{/each}
+		</div>
+	{/if}
+</section>
 
 <style>
-	.container {
-		max-width: 1000px;
-		margin: 0 auto;
-		padding: 2rem;
-	}
+	.page { padding: var(--space-16) 0; }
+	.page-head { text-align: center; max-width: 640px; margin: 0 auto var(--space-12); }
+	.page-head h1 { font-size: var(--text-h1); font-weight: var(--weight-bold); margin: var(--space-3) 0; }
+	.page-head p { color: var(--color-ink-soft); }
 
-	h1 {
-		text-align: center;
-		margin-bottom: 0.5rem;
+	.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--space-6); }
+	.card {
+		display: flex; flex-direction: column;
+		padding: var(--space-6); background: var(--color-card);
+		border: 1px solid var(--color-border); border-radius: var(--radius-md);
+		transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 	}
-
-	.subtitle {
-		text-align: center;
-		color: #666;
-		margin-bottom: 2rem;
-	}
-
-	.filter-section {
-		display: flex;
-		gap: 1rem;
-		margin-bottom: 2rem;
-		flex-wrap: wrap;
-		justify-content: center;
-	}
-
-	.filter-btn {
-		padding: 0.5rem 1rem;
-		border: 1px solid #ddd;
-		background: white;
-		border-radius: 20px;
-		cursor: pointer;
-		transition: all 0.2s;
-		font-size: 0.9rem;
-	}
-
-	.filter-btn:hover {
-		border-color: #007bff;
-		color: #007bff;
-	}
-
-	.filter-btn.active {
-		background: #007bff;
-		color: white;
-		border-color: #007bff;
-	}
-
-	.products-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-		gap: 1.5rem;
-	}
-
-	.product-card {
-		background: #f9f9f9;
-		padding: 1.5rem;
-		border-radius: 8px;
-		border: 1px solid #e5e5e5;
-		display: flex;
-		flex-direction: column;
-	}
-
-	.product-card h3 {
-		margin-top: 0;
-		margin-bottom: 0.5rem;
-		color: #333;
-	}
-
-	.category {
-		display: inline-block;
-		background: #e7f3ff;
-		color: #0056b3;
-		padding: 0.25rem 0.75rem;
-		border-radius: 12px;
-		font-size: 0.85rem;
-		margin-bottom: 1rem;
-		width: fit-content;
-	}
-
-	.description {
-		color: #666;
-		margin: 1rem 0;
-		flex-grow: 1;
-	}
-
-	.provider {
-		font-size: 0.9rem;
-		color: #999;
-		margin: 0.5rem 0;
-	}
-
-	.contact-btn {
-		margin-top: auto;
-		padding: 0.5rem 1rem;
-		background: #007bff;
-		color: white;
-		border: none;
-		border-radius: 4px;
-		cursor: pointer;
-		font-size: 0.9rem;
-	}
-
-	.contact-btn:hover {
-		background: #0056b3;
-	}
+	.card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+	.card h3 { font-size: var(--text-h3); font-weight: var(--weight-semibold); }
+	.tagline { color: var(--color-teal); margin: var(--space-1) 0 var(--space-3); font-size: var(--text-small); }
+	.desc { color: var(--color-ink-soft); flex-grow: 1; }
+	.meta { display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--color-border); }
+	.owner { color: var(--color-ink); text-decoration: none; font-size: var(--text-small); font-weight: var(--weight-medium); }
+	.site { color: var(--color-ink); font-weight: var(--weight-semibold); text-decoration: none; font-size: var(--text-small); }
+	.site:hover, .owner:hover { color: var(--color-teal); }
 
 	.empty {
-		text-align: center;
-		color: #999;
-		grid-column: 1 / -1;
+		max-width: 480px; margin: 0 auto; text-align: center;
+		padding: var(--space-16) var(--space-6);
+		background: var(--color-surface-alt); border-radius: var(--radius-lg);
 	}
+	.empty-ic { font-size: 48px; margin-bottom: var(--space-4); }
+	.empty h2 { font-size: var(--text-h3); font-weight: var(--weight-semibold); }
+	.empty p { color: var(--color-ink-soft); margin: var(--space-3) 0 var(--space-8); }
+	.empty a:not(.btn) { color: var(--color-teal); }
 </style>

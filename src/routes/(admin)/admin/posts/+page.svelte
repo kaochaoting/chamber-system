@@ -110,7 +110,7 @@
 	.inline { display: inline; }
 	.actions { display: flex; gap: var(--space-2); }
 	.btn { padding: var(--space-1) var(--space-3); border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-card); cursor: pointer; font-size: var(--text-small); }
-	.btn.primary { background: var(--color-amber); color: #fff; border-color: var(--color-amber); }
+	.btn.primary { background: var(--color-accent); color: var(--color-on-accent); border-color: var(--color-accent); }
 	.btn.danger { color: var(--color-danger); border-color: var(--color-danger); }
 	.badge { padding: 2px 8px; border-radius: var(--radius-sm); font-size: var(--text-caption); }
 	.badge.published { background: #e3f5ec; color: var(--color-success); }

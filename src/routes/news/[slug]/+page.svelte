@@ -8,7 +8,7 @@
 </script>
 
 <svelte:head>
-	<title>{post.title}｜商會系統</title>
+	<title>{post.title}｜高創坊</title>
 	<meta name="description" content={(post.body ?? '').slice(0, 120)} />
 	{@html `<script type="application/ld+json">${data.jsonLd}<\/script>`}
 </svelte:head>
