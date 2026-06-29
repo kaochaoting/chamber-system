@@ -16,11 +16,12 @@ export type AuthEnv = {
 
 /**
  * 以請求環境建立 Better Auth 實例（Workers 需請求內注入 D1 綁定）。
+ * 高創坊統一採用 Google 登入（不開放 email/密碼）。
  *
- * ⚠️ 第一次部署的最高風險點（見 docs/SSD.md §10）：
+ * 重點：
  *  - db 由 platform.env.DB 注入、adapter provider = 'sqlite'
  *  - sveltekitCookies 必須是 plugins 陣列的「最後一個」
- *  - 新帳號 status 預設 'pending'（Google 也是）；email 邀請碼路徑於 register action 升級為 'active'
+ *  - 新帳號 status 預設 'pending'（Google 新帳號一律待後台審核）
  */
 export function createAuth(env: AuthEnv) {
 	const db = getDb(env.DB);
@@ -34,7 +35,7 @@ export function createAuth(env: AuthEnv) {
 		baseURL: env.BETTER_AUTH_URL,
 		secret: env.BETTER_AUTH_SECRET,
 		database: drizzleAdapter(db, { provider: 'sqlite', schema }),
-		emailAndPassword: { enabled: true, minPasswordLength: 8 },
+		emailAndPassword: { enabled: false }, // 統一 Google 登入，關閉密碼登入
 		socialProviders: social,
 		user: {
 			additionalFields: {
