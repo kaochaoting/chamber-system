@@ -14,9 +14,9 @@
 		{#if data.user.role === 'admin' || data.user.role === 'assistant'}
 			<a href="/admin" class="tile staff"><h3>後台管理</h3><p>審核・內容・角色</p></a>
 		{/if}
-		<div class="tile soon"><span class="badge">即將推出</span><h3>內部論壇</h3><p>與同學交流</p></div>
-		<div class="tile soon"><span class="badge">即將推出</span><h3>互通有無</h3><p>供給與需求看板</p></div>
-		<div class="tile soon"><span class="badge">即將推出</span><h3>完整名錄</h3><p>含內部聯絡方式</p></div>
+		<a href="/app/forum" class="tile"><h3>內部論壇</h3><p>與同學交流、提問、分享</p></a>
+		<a href="/app/board" class="tile"><h3>互通有無</h3><p>供給與需求看板</p></a>
+		<a href="/app/directory" class="tile"><h3>完整名錄</h3><p>含內部聯絡方式</p></a>
 	</div>
 
 	<form method="POST" action="/logout?/default" class="logout"><button>登出</button></form>
