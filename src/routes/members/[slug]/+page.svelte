@@ -6,8 +6,8 @@
 	const initial = (profile.displayName ?? '會').trim()[0];
 	const img = (key: string | null | undefined) => (key ? `/img/${encodeURIComponent(key)}` : null);
 
-	// 膠卷場景：有真實圖用圖，否則用暮光漸層佔位
-	const reel = gallery.length ? gallery : [];
+	// 膠卷場景：有真實圖用圖；無圖則用暮光佔位場景（讓輪播仍可展示）
+	const reel: (string | null)[] = gallery.length ? gallery : [null, null, null, null];
 
 	let reelEl: HTMLDivElement;
 	function nudge(dir: number) {
@@ -126,9 +126,13 @@
 			<div class="reel-nav"><button onclick={() => nudge(-1)} aria-label="上一張">‹</button><button onclick={() => nudge(1)} aria-label="下一張">›</button></div>
 		</header>
 		<div class="reel" bind:this={reelEl}>
-			{#each reel as key, i (key + i)}
+			{#each reel as key, i (i)}
 				<figure class="frame">
-					<img src={img(key)} alt="" loading="lazy" />
+					{#if key}
+						<img src={img(key)} alt="" loading="lazy" />
+					{:else}
+						<div class="frame-ph" style="--h:{(i * 84 + 250) % 360}"></div>
+					{/if}
 					<figcaption>{String(i + 1).padStart(2, '0')} / {String(reel.length).padStart(2, '0')}</figcaption>
 				</figure>
 			{/each}
@@ -260,6 +264,12 @@
 	.frame { flex: 0 0 auto; width: min(70vw, 460px); aspect-ratio: 16/10; scroll-snap-align: center;
 		position: relative; border-radius: var(--radius-md); overflow: hidden; margin: 0; }
 	.frame img { width: 100%; height: 100%; object-fit: cover; }
+	.frame-ph { width: 100%; height: 100%;
+		background: linear-gradient(135deg, hsl(calc(var(--h) * 1deg) 40% 24%), var(--dusk) 60%, var(--color-ink));
+		position: relative; }
+	.frame-ph::after { content: '高創坊'; position: absolute; inset: 0; display: grid; place-items: center;
+		font-family: var(--font-display); font-weight: 700; font-size: 1.4rem;
+		color: color-mix(in srgb, var(--color-accent) 70%, transparent); letter-spacing: 0.2em; }
 	.frame figcaption { position: absolute; left: var(--space-3); bottom: var(--space-3);
 		font-family: var(--font-mono); font-size: var(--text-caption); color: #fff;
 		background: rgba(0,0,0,0.5); padding: 2px 8px; border-radius: var(--radius-sm); }
