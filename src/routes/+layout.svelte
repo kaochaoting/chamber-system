@@ -6,7 +6,7 @@
 
 <header class="nav">
 	<div class="nav-inner">
-		<a href="/" class="brand"><span class="logo">高</span>高創坊</a>
+		<a href="/" class="brand">高創坊</a>
 		<nav class="links">
 			<a href="/members" class:active={$page.url.pathname.startsWith('/members')}>會員名錄</a>
 			<a href="/directory" class:active={$page.url.pathname.startsWith('/directory')}>產品服務</a>
@@ -28,7 +28,7 @@
 <footer>
 	<div class="foot-inner">
 		<div class="foot-brand">
-			<a href="/" class="brand"><span class="logo">高</span>高創坊</a>
+			<a href="/" class="brand brand-light">高創坊</a>
 			<p class="tagline">不只讓人看見你，而是讓人選擇你。</p>
 		</div>
 		<nav class="foot-links">
@@ -36,6 +36,7 @@
 			<a href="/directory">產品服務</a>
 			<a href="/news">最新消息</a>
 			<a href="/register">申請加入</a>
+			<a href="/privacy">隱私權政策</a>
 		</nav>
 	</div>
 	<div class="foot-base">
@@ -75,18 +76,18 @@
 		letter-spacing: -0.02em;
 		white-space: nowrap;
 	}
-	.logo { flex: none; }
-	.logo {
-		display: grid;
-		place-items: center;
-		width: 32px;
-		height: 32px;
+	/* 字標末尾一點萊姆，之後可換成 <img class="brand-logo"> 圖片標誌 */
+	.brand::after {
+		content: '';
+		width: 7px;
+		height: 7px;
+		border-radius: 50%;
 		background: var(--color-accent);
-		color: var(--color-on-accent);
-		border-radius: var(--radius-sm);
-		font-size: 18px;
-		font-weight: var(--weight-bold);
+		margin-left: 1px;
+		align-self: flex-end;
+		margin-bottom: 6px;
 	}
+	.brand-light { color: #fff; }
 	.links { display: flex; gap: var(--space-6); align-items: center; font-size: var(--text-small); }
 	.links a { color: var(--color-ink-soft); text-decoration: none; font-weight: var(--weight-medium); }
 	.links a:hover, .links a.active { color: var(--color-ink); }

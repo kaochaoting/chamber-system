@@ -7,32 +7,41 @@
 	<meta name="description" content="高創坊成員提供的產品與服務型錄。" />
 </svelte:head>
 
-<section class="page">
-	<header class="page-head">
-		<span class="eyebrow">對外開放索引</span>
-		<h1>產品與服務</h1>
-		<p>高創坊成員的創業、產品與服務，讓客戶找得到、選得到。</p>
-	</header>
+<!-- 聚光舞台 hero -->
+<section class="stage">
+	<div class="grain" aria-hidden="true"></div>
+	<div class="spot" aria-hidden="true"></div>
+	<div class="stage-inner">
+		<span class="eyebrow eyebrow-dark">對外開放索引</span>
+		<h1>產品與<span class="hl">服務</span></h1>
+		<p class="lede">高創坊成員的創業、產品與服務 ── 讓客戶找得到、被選擇。</p>
+	</div>
+</section>
 
+<section class="page">
 	{#if data.ventures.length === 0}
 		<div class="empty">
-			<div class="empty-ic">🚀</div>
+			<div class="empty-ic">🎬</div>
 			<h2>型錄即將上線</h2>
 			<p>成員的創業檔案陸續建立中。先看看 <a href="/members">會員名錄</a>，認識社群裡的創業者。</p>
 			<a class="btn btn-primary" href="/members">瀏覽會員名錄</a>
 		</div>
 	{:else}
 		<div class="grid">
-			{#each data.ventures as v (v.id)}
+			{#each data.ventures as v, i (v.id)}
 				<article class="card">
-					<h3>{v.name}</h3>
-					{#if v.tagline}<p class="tagline">{v.tagline}</p>{/if}
-					{#if v.description}<p class="desc">{v.description}</p>{/if}
-					<div class="meta">
-						{#if v.ownerSlug}<a class="owner" href="/members/{v.ownerSlug}">{v.ownerName}</a>{/if}
-						{#if v.websiteUrl}
-							<a class="site" href={v.websiteUrl} target="_blank" rel="noopener">官網 →</a>
-						{/if}
+					<div class="poster" style="--h:{(i * 67 + 250) % 360}">
+						<span class="poster-mark">{v.name?.[0] ?? '創'}</span>
+						<span class="no">{String(i + 1).padStart(2, '0')}</span>
+					</div>
+					<div class="body">
+						<h3>{v.name}</h3>
+						{#if v.tagline}<p class="tagline">{v.tagline}</p>{/if}
+						{#if v.description}<p class="desc">{v.description}</p>{/if}
+						<div class="meta">
+							{#if v.ownerSlug}<a class="owner" href="/members/{v.ownerSlug}">{v.ownerName} →</a>{/if}
+							{#if v.websiteUrl}<a class="site" href={v.websiteUrl} target="_blank" rel="noopener">官網</a>{/if}
+						</div>
 					</div>
 				</article>
 			{/each}
@@ -41,32 +50,51 @@
 </section>
 
 <style>
-	.page { padding: var(--space-16) 0; }
-	.page-head { text-align: center; max-width: 640px; margin: 0 auto var(--space-12); }
-	.page-head h1 { font-size: var(--text-h1); font-weight: var(--weight-bold); margin: var(--space-3) 0; }
-	.page-head p { color: var(--color-ink-soft); }
+	/* 聚光舞台 */
+	.stage {
+		position: relative; overflow: hidden;
+		background: var(--color-ink); color: #fff;
+		margin: 0 calc(-1 * var(--space-4));
+		padding: var(--space-24) var(--space-4) var(--space-16);
+		background-image: radial-gradient(110% 80% at 70% 12%, var(--dusk), transparent 58%);
+	}
+	.spot { position: absolute; inset: 0;
+		background: radial-gradient(34% 42% at 64% 30%, color-mix(in srgb, var(--color-accent) 22%, transparent), transparent 70%); }
+	.grain { position: absolute; inset: 0; opacity: 0.05; pointer-events: none;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+	.stage-inner { position: relative; z-index: 2; max-width: 760px; }
+	.eyebrow-dark { color: rgba(255,255,255,0.78); border-color: rgba(255,255,255,0.2); }
+	.stage h1 { color: #fff; font-weight: 700; letter-spacing: -0.02em;
+		font-size: var(--text-display); line-height: 1.05; margin: var(--space-4) 0 var(--space-3); }
+	.hl { color: var(--color-accent); }
+	.lede { color: rgba(255,255,255,0.82); font-size: var(--text-h3); max-width: 560px; }
 
+	.page { padding: var(--space-16) 0; }
 	.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--space-6); }
 	.card {
-		display: flex; flex-direction: column;
-		padding: var(--space-6); background: var(--color-card);
-		border: 1px solid var(--color-border); border-radius: var(--radius-md);
+		display: flex; flex-direction: column; overflow: hidden;
+		background: var(--color-card); border: 1px solid var(--color-border);
+		border-radius: var(--radius-md);
 		transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 	}
-	.card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+	.card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+	.poster { position: relative; aspect-ratio: 16/9; display: grid; place-items: center;
+		background: linear-gradient(150deg, hsl(calc(var(--h) * 1deg) 42% 24%), var(--dusk) 55%, var(--color-ink)); }
+	.poster-mark { font-family: var(--font-display); font-weight: 700; font-size: 3.4rem;
+		color: color-mix(in srgb, var(--color-accent) 80%, #fff); }
+	.poster .no { position: absolute; left: var(--space-3); bottom: var(--space-2);
+		font-family: var(--font-mono); font-size: var(--text-caption); color: rgba(255,255,255,0.7); }
+	.body { padding: var(--space-6); display: flex; flex-direction: column; flex-grow: 1; }
 	.card h3 { font-size: var(--text-h3); font-weight: var(--weight-semibold); }
 	.tagline { color: var(--color-teal); margin: var(--space-1) 0 var(--space-3); font-size: var(--text-small); }
-	.desc { color: var(--color-ink-soft); flex-grow: 1; }
+	.desc { color: var(--color-ink-soft); flex-grow: 1; font-size: var(--text-small); }
 	.meta { display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--color-border); }
 	.owner { color: var(--color-ink); text-decoration: none; font-size: var(--text-small); font-weight: var(--weight-medium); }
-	.site { color: var(--color-ink); font-weight: var(--weight-semibold); text-decoration: none; font-size: var(--text-small); }
-	.site:hover, .owner:hover { color: var(--color-teal); }
+	.site { color: var(--color-on-accent); background: var(--color-accent); padding: 6px 14px; border-radius: var(--radius-pill); font-weight: var(--weight-medium); text-decoration: none; font-size: var(--text-small); }
+	.owner:hover { color: var(--color-teal); }
 
-	.empty {
-		max-width: 480px; margin: 0 auto; text-align: center;
-		padding: var(--space-16) var(--space-6);
-		background: var(--color-surface-alt); border-radius: var(--radius-lg);
-	}
+	.empty { max-width: 480px; margin: 0 auto; text-align: center;
+		padding: var(--space-16) var(--space-6); background: var(--color-surface-alt); border-radius: var(--radius-lg); }
 	.empty-ic { font-size: 48px; margin-bottom: var(--space-4); }
 	.empty h2 { font-size: var(--text-h3); font-weight: var(--weight-semibold); }
 	.empty p { color: var(--color-ink-soft); margin: var(--space-3) 0 var(--space-8); }

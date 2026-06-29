@@ -7,7 +7,7 @@ export const GET: RequestHandler = async ({ platform, url }) => {
 	const base = `${url.protocol}//${url.host}`;
 	const db = getDb((platform!.env as any).DB);
 
-	const staticUrls = ['/', '/members', '/news', '/register'];
+	const staticUrls = ['/', '/members', '/directory', '/news', '/register', '/privacy'];
 
 	const pubProfiles = await db
 		.select({ slug: profiles.slug })
