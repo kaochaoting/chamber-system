@@ -16,19 +16,27 @@
 
 	onMount(() => {
 		const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		const els = document.querySelectorAll('[data-reveal]');
+		const els = Array.from(document.querySelectorAll('[data-reveal]'));
 		if (reduce) {
 			els.forEach((e) => e.classList.add('in'));
 			return;
 		}
 		const io = new IntersectionObserver(
 			(entries) => {
-				for (const en of entries) if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+				for (const en of entries)
+					if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
 			},
-			{ threshold: 0.18 }
+			{ threshold: 0, rootMargin: '0px 0px -8% 0px' }
 		);
-		els.forEach((e) => io.observe(e));
-		return () => io.disconnect();
+		els.forEach((e) => {
+			// 已在視窗內或之上者直接顯示，其餘交給 IO
+			const r = e.getBoundingClientRect();
+			if (r.top < window.innerHeight * 0.95) e.classList.add('in');
+			else io.observe(e);
+		});
+		// 安全網：1.8s 後仍未顯示者強制顯示，避免任何內容永久隱形
+		const safety = setTimeout(() => els.forEach((e) => e.classList.add('in')), 1800);
+		return () => { io.disconnect(); clearTimeout(safety); };
 	});
 </script>
 
