@@ -2,8 +2,9 @@
 	let { data } = $props();
 	const post = data.post;
 
-	function fmtDate(ts: number) {
-		return new Date(ts * 1000).toLocaleDateString('zh-TW');
+	function fmtDate(ts: Date | number) {
+		const d = ts instanceof Date ? ts : new Date(Number(ts) * 1000);
+		return d.toLocaleDateString('zh-TW');
 	}
 </script>
 
