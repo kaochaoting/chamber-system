@@ -1,6 +1,16 @@
 <script lang="ts">
 	let { data } = $props();
 	let copied = $state(false);
+	let copiedText = $state(false);
+
+	// 推薦文範例（含專屬連結，可自行修改後分享）
+	let shareText = $state(
+		`我加入了「高創坊」——高雄勞工大學創新創業專班的社群商會 🚀\n\n` +
+			`這裡可以建立自己的創業品牌頁、被搜尋看見、和同學互通有無、找到合作夥伴。\n` +
+			`不只讓人看見你，而是讓人選擇你。\n\n` +
+			`用我的專屬連結加入（Google 一鍵登入）：\n${data.joinUrl}\n\n` +
+			`一起加入，讓更多人選擇我們 💪`
+	);
 
 	async function copy() {
 		try {
@@ -9,6 +19,16 @@
 			setTimeout(() => (copied = false), 1800);
 		} catch {
 			copied = false;
+		}
+	}
+
+	async function copyText() {
+		try {
+			await navigator.clipboard.writeText(shareText);
+			copiedText = true;
+			setTimeout(() => (copiedText = false), 1800);
+		} catch {
+			copiedText = false;
 		}
 	}
 
@@ -31,6 +51,13 @@
 			<button class="btn btn-primary" onclick={copy}>{copied ? '已複製 ✓' : '複製連結'}</button>
 		</div>
 		<p class="hint">對方點此連結 → 用 Google 登入 → 自動成為你推薦的會員（仍需後台審核啟用）。</p>
+	</div>
+
+	<div class="panel">
+		<h2>推薦文範例</h2>
+		<p class="hint">可直接複製整段（已含你的連結）分享到 LINE／IG／Facebook，也可以自行修改文字。</p>
+		<textarea class="share" rows="9" bind:value={shareText}></textarea>
+		<button class="btn btn-primary" onclick={copyText}>{copiedText ? '已複製整段 ✓' : '複製推薦文'}</button>
 	</div>
 
 	{#if data.referrer}
@@ -66,6 +93,7 @@
 	.linkbox { display: flex; gap: var(--space-3); flex-wrap: wrap; }
 	.linkbox input { flex: 1; min-width: 240px; padding: var(--space-3); border: 1px solid var(--color-border); border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: var(--text-small); }
 	.hint { color: var(--color-ink-soft); font-size: var(--text-small); margin-top: var(--space-3); }
+	.share { width: 100%; box-sizing: border-box; padding: var(--space-3); border: 1px solid var(--color-border); border-radius: var(--radius-md); font-family: inherit; font-size: var(--text-small); line-height: 1.7; margin: var(--space-3) 0; resize: vertical; }
 	.referrer { margin-top: var(--space-6); color: var(--color-ink-soft); font-size: var(--text-small); }
 	.muted { color: var(--color-ink-soft); font-size: var(--text-small); }
 	.list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
