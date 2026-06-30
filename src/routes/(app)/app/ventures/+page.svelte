@@ -43,6 +43,8 @@
 				<label>LINE<input name="line" value={v?.socials?.line ?? ''} placeholder="LINE 連結或 ID" /></label>
 				<label>Facebook<input name="facebook" value={v?.socials?.facebook ?? ''} placeholder="https://facebook.com/…" /></label>
 				<label>Instagram<input name="instagram" value={v?.socials?.instagram ?? ''} placeholder="https://instagram.com/…" /></label>
+				<label>YouTube<input name="youtube" value={v?.socials?.youtube ?? ''} placeholder="https://youtube.com/@…" /></label>
+				<label>Threads<input name="threads" value={v?.socials?.threads ?? ''} placeholder="https://threads.net/@…" /></label>
 			</div>
 			<GalleryUpload name="galleryKeys" bind:value={galleryKeys} min={5} />
 			<label class="check"><input type="checkbox" name="isPublic" checked={v ? v.isPublic : true} />在「產品與服務」對外公開</label>

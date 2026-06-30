@@ -27,6 +27,8 @@
 				<label>LINE<input name="line" value={p?.socials?.line ?? ''} placeholder="LINE 連結或 ID" /></label>
 				<label>Facebook<input name="facebook" value={p?.socials?.facebook ?? ''} placeholder="https://facebook.com/…" /></label>
 				<label>Instagram<input name="instagram" value={p?.socials?.instagram ?? ''} placeholder="https://instagram.com/…" /></label>
+				<label>YouTube<input name="youtube" value={p?.socials?.youtube ?? ''} placeholder="https://youtube.com/@…" /></label>
+				<label>Threads<input name="threads" value={p?.socials?.threads ?? ''} placeholder="https://threads.net/@…" /></label>
 			</div>
 			<label class="check"><input type="checkbox" name="isPublic" checked={p?.isPublic ?? false} />在對外名錄公開我的檔案</label>
 		</fieldset>

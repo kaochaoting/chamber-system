@@ -46,9 +46,11 @@ export const actions: Actions = {
 		const socials = {
 			line: String(f.get('line') ?? '').trim(),
 			facebook: String(f.get('facebook') ?? '').trim(),
-			instagram: String(f.get('instagram') ?? '').trim()
+			instagram: String(f.get('instagram') ?? '').trim(),
+			youtube: String(f.get('youtube') ?? '').trim(),
+			threads: String(f.get('threads') ?? '').trim()
 		};
-		const hasSocial = socials.line || socials.facebook || socials.instagram;
+		const hasSocial = Object.values(socials).some((x) => x);
 
 		const values = {
 			name,

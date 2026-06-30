@@ -42,7 +42,9 @@ export const actions: Actions = {
 			website: String(form.get('website') ?? '').trim(),
 			line: String(form.get('line') ?? '').trim(),
 			facebook: String(form.get('facebook') ?? '').trim(),
-			instagram: String(form.get('instagram') ?? '').trim()
+			instagram: String(form.get('instagram') ?? '').trim(),
+			youtube: String(form.get('youtube') ?? '').trim(),
+			threads: String(form.get('threads') ?? '').trim()
 		};
 
 		const existing = await db.select().from(profiles).where(eq(profiles.userId, userId)).limit(1);

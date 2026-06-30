@@ -15,7 +15,9 @@
 		{ label: '官網', val: s.website },
 		{ label: 'LINE', val: s.line },
 		{ label: 'Facebook', val: s.facebook },
-		{ label: 'Instagram', val: s.instagram }
+		{ label: 'Instagram', val: s.instagram },
+		{ label: 'YouTube', val: s.youtube },
+		{ label: 'Threads', val: s.threads }
 	].filter((x) => x.val && x.val.trim());
 
 	// 膠卷場景：有真實圖用圖；無圖則用暮光佔位場景（讓輪播仍可展示）
