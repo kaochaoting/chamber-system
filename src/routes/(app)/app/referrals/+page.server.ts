@@ -40,7 +40,8 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
 	}
 
 	return {
-		joinUrl: `${url.origin}/join?ref=${meId}`,
+		// openExternalBrowser=1：LINE 內點連結會改用系統瀏覽器開啟（避免 Google 擋內建瀏覽器）；其他平台忽略
+		joinUrl: `${url.origin}/join?ref=${meId}&openExternalBrowser=1`,
 		referred: referred.map((r) => ({ ...r, categoryLabel: catLabel[r.category] ?? r.category })),
 		referrer
 	};
