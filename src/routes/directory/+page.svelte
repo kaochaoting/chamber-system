@@ -12,7 +12,7 @@
 	<div class="stage-inner">
 		<span class="eyebrow eyebrow-dark">對外開放索引</span>
 		<h1>產品與<span class="hl">服務</span></h1>
-		<p class="lede">高創坊成員的創業、產品與服務 ── 讓客戶找得到、被選擇。</p>
+		<p class="lede"><span class="nowrap">高創坊成員的創業、產品與服務</span> <span class="nowrap">── 讓客戶找得到、被選擇。</span></p>
 	</div>
 </section>
 
@@ -74,7 +74,7 @@
 	.stage h1 { color: #fff; font-weight: 700; letter-spacing: -0.02em;
 		font-size: var(--text-display); line-height: 1.05; margin: var(--space-4) 0 var(--space-3); }
 	.hl { color: var(--color-accent); }
-	.lede { color: rgba(255,255,255,0.82); font-size: var(--text-h3); max-width: 40ch; text-wrap: balance; }
+	.lede { color: rgba(255,255,255,0.82); font-size: var(--text-h3); max-width: 640px; }
 
 	.page { padding: var(--space-16) 0; }
 	.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--space-6); }

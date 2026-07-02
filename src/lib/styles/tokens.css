@@ -120,10 +120,10 @@ dt {
 	text-wrap: pretty;
 }
 
-/* hero 副標／短句：兩行等長，避免孤字與破碎斷行 */
-.lede,
-.sub {
-	text-wrap: balance;
+/* 語意片段：片段內不斷行，只允許在片段之間換行（避免中文拆詞）*/
+.nowrap {
+	display: inline-block;
+	white-space: nowrap;
 }
 
 h1,
