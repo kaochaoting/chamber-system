@@ -29,8 +29,8 @@
 	{:else}
 		<div class="grid">
 			{#each data.ventures as v, i (v.id)}
+				{@const cover = v.logoKey ?? (v.galleryKeys ?? [])[0]}
 				<article class="card">
-					{@const cover = v.logoKey ?? (v.galleryKeys ?? [])[0]}
 					<div class="poster" class:has-img={cover} style="--h:{(i * 67 + 250) % 360}">
 						{#if cover}
 							<img src={`/img/${cover}`} alt={v.name} />
