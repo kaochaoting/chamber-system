@@ -104,6 +104,20 @@ body {
 	font-size: var(--text-body);
 	line-height: var(--leading-body);
 	-webkit-font-smoothing: antialiased;
+	/* 中文換行：標點不落行首、正常斷行、避免溢出 */
+	line-break: strict;
+	word-break: normal;
+	overflow-wrap: break-word;
+}
+
+/* 內文：避免最後一行只剩孤字（text-wrap: pretty） */
+p,
+li,
+figcaption,
+blockquote,
+dd,
+dt {
+	text-wrap: pretty;
 }
 
 h1,
@@ -114,6 +128,8 @@ h3 {
 	line-height: var(--leading-heading);
 	font-weight: var(--weight-semibold);
 	letter-spacing: -0.01em;
+	/* 標題：各行長度平衡，不會頭重腳輕 */
+	text-wrap: balance;
 }
 
 a {
