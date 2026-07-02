@@ -9,8 +9,6 @@
 
 <!-- 聚光舞台 hero -->
 <section class="stage">
-	<div class="grain" aria-hidden="true"></div>
-	<div class="spot" aria-hidden="true"></div>
 	<div class="stage-inner">
 		<span class="eyebrow eyebrow-dark">對外開放索引</span>
 		<h1>產品與<span class="hl">服務</span></h1>
@@ -55,18 +53,22 @@
 </section>
 
 <style>
-	/* 聚光舞台 */
+	/* 聚光舞台（背景圖 + 左側深色漸罩，確保文字可讀）*/
 	.stage {
 		position: relative; overflow: hidden;
-		background: var(--color-ink); color: #fff;
+		color: #fff;
 		margin: 0 calc(-1 * var(--space-4));
 		padding: var(--space-24) var(--space-4) var(--space-16);
-		background-image: radial-gradient(110% 80% at 70% 12%, var(--dusk), transparent 58%);
+		min-height: 340px;
+		background-color: var(--color-ink);
+		background-image:
+			linear-gradient(90deg, rgba(18,20,29,0.92) 0%, rgba(18,20,29,0.70) 42%, rgba(18,20,29,0.30) 100%),
+			url('/hero-directory.png');
+		background-size: cover, cover;
+		background-position: center, center;
+		background-repeat: no-repeat, no-repeat;
+		display: flex; align-items: center;
 	}
-	.spot { position: absolute; inset: 0;
-		background: radial-gradient(34% 42% at 64% 30%, color-mix(in srgb, var(--color-accent) 22%, transparent), transparent 70%); }
-	.grain { position: absolute; inset: 0; opacity: 0.05; pointer-events: none;
-		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
 	.stage-inner { position: relative; z-index: 2; max-width: 760px; }
 	.eyebrow-dark { color: rgba(255,255,255,0.78); border-color: rgba(255,255,255,0.2); }
 	.stage h1 { color: #fff; font-weight: 700; letter-spacing: -0.02em;
