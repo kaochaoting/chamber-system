@@ -13,6 +13,8 @@ export const load: PageServerLoad = async ({ platform }) => {
 			tagline: ventures.tagline,
 			description: ventures.description,
 			websiteUrl: ventures.websiteUrl,
+			logoKey: ventures.logoKey,
+			galleryKeys: ventures.galleryKeys,
 			ownerSlug: profiles.slug,
 			ownerName: profiles.displayName
 		})

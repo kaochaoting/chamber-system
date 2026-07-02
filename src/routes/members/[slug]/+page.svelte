@@ -82,11 +82,21 @@
 </section>
 
 <!-- ② Monologue：關於 -->
-{#if profile.bio}
+{#if profile.bio || venture?.name}
 	<section class="monologue" data-reveal>
 		<span class="scene-no">01 — 關於</span>
-		<p class="quote">{profile.bio}</p>
-		{#if venture?.name}<p class="venture-name">{venture.name}{#if venture.description}　·　{venture.description}{/if}</p>{/if}
+		{#if profile.bio}<p class="quote">{profile.bio}</p>{/if}
+		{#if venture?.name}
+			<div class="brand">
+				{#if venture.logoKey}
+					<div class="brand-logo"><img src={img(venture.logoKey)} alt={venture.name} /></div>
+				{/if}
+				<div>
+					<p class="brand-name">{venture.name}</p>
+					{#if venture.description}<p class="brand-desc">{venture.description}</p>{/if}
+				</div>
+			</div>
+		{/if}
 	</section>
 {/if}
 
@@ -235,7 +245,11 @@
 	.scene-no { font-family: var(--font-mono); font-size: var(--text-caption); letter-spacing: 0.18em; color: var(--color-teal); text-transform: uppercase; }
 	.quote { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.01em;
 		font-size: clamp(1.5rem, 3.4vw, 2.6rem); line-height: 1.35; margin: var(--space-4) 0 0; }
-	.venture-name { color: var(--color-ink-soft); margin-top: var(--space-4); }
+	.brand { display: flex; align-items: center; gap: var(--space-4); margin-top: var(--space-8); }
+	.brand-logo { width: 72px; height: 72px; flex: none; border-radius: var(--radius-md); overflow: hidden; background: #fff; border: 1px solid var(--color-border); display: grid; place-items: center; }
+	.brand-logo img { width: 100%; height: 100%; object-fit: contain; padding: 8px; box-sizing: border-box; }
+	.brand-name { font-family: var(--font-display); font-weight: var(--weight-semibold); font-size: var(--text-h3); }
+	.brand-desc { color: var(--color-ink-soft); font-size: var(--text-small); margin-top: 2px; }
 
 	/* 通用區段標頭 */
 	.sec-head { display: flex; align-items: baseline; gap: var(--space-4); margin-bottom: var(--space-8); flex-wrap: wrap; }

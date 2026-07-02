@@ -30,8 +30,13 @@
 		<div class="grid">
 			{#each data.ventures as v, i (v.id)}
 				<article class="card">
-					<div class="poster" style="--h:{(i * 67 + 250) % 360}">
-						<span class="poster-mark">{v.name?.[0] ?? '創'}</span>
+					{@const cover = v.logoKey ?? (v.galleryKeys ?? [])[0]}
+					<div class="poster" class:has-img={cover} style="--h:{(i * 67 + 250) % 360}">
+						{#if cover}
+							<img src={`/img/${cover}`} alt={v.name} />
+						{:else}
+							<span class="poster-mark">{v.name?.[0] ?? '創'}</span>
+						{/if}
 						<span class="no">{String(i + 1).padStart(2, '0')}</span>
 					</div>
 					<div class="body">
@@ -78,8 +83,10 @@
 		transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 	}
 	.card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
-	.poster { position: relative; aspect-ratio: 16/9; display: grid; place-items: center;
+	.poster { position: relative; aspect-ratio: 16/9; display: grid; place-items: center; overflow: hidden;
 		background: linear-gradient(150deg, hsl(calc(var(--h) * 1deg) 42% 24%), var(--dusk) 55%, var(--color-ink)); }
+	.poster img { width: 100%; height: 100%; object-fit: contain; padding: var(--space-4); box-sizing: border-box; }
+	.poster.has-img { background: #fff; }
 	.poster-mark { font-family: var(--font-display); font-weight: 700; font-size: 3.4rem;
 		color: color-mix(in srgb, var(--color-accent) 80%, #fff); }
 	.poster .no { position: absolute; left: var(--space-3); bottom: var(--space-2);
