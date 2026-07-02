@@ -120,6 +120,12 @@ dt {
 	text-wrap: pretty;
 }
 
+/* hero 副標／短句：兩行等長，避免孤字與破碎斷行 */
+.lede,
+.sub {
+	text-wrap: balance;
+}
+
 h1,
 h2,
 h3 {
