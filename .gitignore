@@ -28,7 +28,8 @@ build/
 .DS_Store
 Thumbs.db
 
-# 備份
+# 備份（含個資，切勿上傳公開 repo）
+backups/
 *.bak
 *.tmp
 
